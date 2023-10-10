@@ -1,0 +1,458 @@
+{
+  "harvestUsers": [
+    {
+      "id": 0,
+      "first_name": "Austin",
+      "last_name": "Hyatt",
+      "email": "Trever63@yahoo.com",
+      "telephone": "(789) 624-4913 x89681",
+      "timezone": "Europe/Tallinn",
+      "weekly_capacity": 33,
+      "has_access_to_all_future_projects": true,
+      "is_contractor": true,
+      "is_active": false,
+      "calendar_integration_enabled": false,
+      "calendar_integration_source": {},
+      "created_at": "2022-06-16T04:09:27.214Z",
+      "updated_at": "2023-04-24T10:56:18.908Z",
+      "can_create_projects": false,
+      "default_hourly_rate": 331688148205568,
+      "cost_rate": 865860063330304,
+      "roles": [
+        "Global Communications Technician",
+        "Dynamic Markets Technician",
+        "Internal Integration Developer"
+      ],
+      "access_roles": [
+        ""
+      ],
+      "permissions_claims": [
+        "animi"
+      ],
+      "avatar_url": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/164.jpg"
+    },
+    {
+      "id": 1,
+      "first_name": "Esta",
+      "last_name": "Huel",
+      "email": "Samanta92@yahoo.com",
+      "telephone": "(413) 991-6979 x266",
+      "timezone": "America/Argentina/Tucuman",
+      "weekly_capacity": 14,
+      "has_access_to_all_future_projects": false,
+      "is_contractor": true,
+      "is_active": false,
+      "calendar_integration_enabled": false,
+      "calendar_integration_source": {},
+      "created_at": "2022-05-29T05:37:53.616Z",
+      "updated_at": "2022-12-11T13:49:16.007Z",
+      "can_create_projects": false,
+      "default_hourly_rate": 5500481560379392,
+      "cost_rate": 6719267493904384,
+      "roles": [],
+      "access_roles": [
+        "denuo",
+        "libero",
+        "valetudo"
+      ],
+      "permissions_claims": [
+        "arx",
+        "at",
+        "decumbo"
+      ],
+      "avatar_url": "https://avatars.githubusercontent.com/u/41943613"
+    },
+    {
+      "id": 2,
+      "first_name": "Brain",
+      "last_name": "Jerde",
+      "email": "Cale.Weissnat15@gmail.com",
+      "telephone": "811-538-1538",
+      "timezone": "America/Argentina/Ushuaia",
+      "weekly_capacity": 23,
+      "has_access_to_all_future_projects": true,
+      "is_contractor": true,
+      "is_active": false,
+      "calendar_integration_enabled": false,
+      "calendar_integration_source": {},
+      "created_at": "2023-03-11T23:51:55.977Z",
+      "updated_at": "2023-04-13T21:17:37.790Z",
+      "can_create_projects": false,
+      "default_hourly_rate": 1776561095180288,
+      "cost_rate": 3312695602315264,
+      "roles": [
+        "Human Intranet Technician",
+        "Human Creative Agent",
+        "Global Marketing Engineer",
+        "Internal Accounts Orchestrator",
+        "Product Optimization Facilitator"
+      ],
+      "access_roles": [
+        ""
+      ],
+      "permissions_claims": [
+        "territo"
+      ],
+      "avatar_url": "https://avatars.githubusercontent.com/u/37422452"
+    },
+    {
+      "id": 3,
+      "first_name": "Bobbie",
+      "last_name": "Metz",
+      "email": "Bernadette_Heathcote93@gmail.com",
+      "telephone": "408-633-0815 x574",
+      "timezone": "America/Blanc-Sablon",
+      "weekly_capacity": 2,
+      "has_access_to_all_future_projects": false,
+      "is_contractor": false,
+      "is_active": false,
+      "calendar_integration_enabled": false,
+      "calendar_integration_source": {},
+      "created_at": "2021-12-09T10:10:50.656Z",
+      "updated_at": "2022-11-15T02:48:38.073Z",
+      "can_create_projects": true,
+      "default_hourly_rate": 723179643338752,
+      "cost_rate": 8079951400009728,
+      "roles": [
+        "Forward Division Consultant"
+      ],
+      "access_roles": [
+        "theca"
+      ],
+      "permissions_claims": [
+        "delego"
+      ],
+      "avatar_url": "https://avatars.githubusercontent.com/u/46668048"
+    },
+    {
+      "id": 4,
+      "first_name": "Darrion",
+      "last_name": "Gutmann-Macejkovic",
+      "email": "Molly_Stoltenberg77@yahoo.com",
+      "telephone": "954-816-5784",
+      "timezone": "America/Managua",
+      "weekly_capacity": 24,
+      "has_access_to_all_future_projects": true,
+      "is_contractor": false,
+      "is_active": false,
+      "calendar_integration_enabled": true,
+      "calendar_integration_source": {},
+      "created_at": "2022-11-02T15:35:48.563Z",
+      "updated_at": "2023-01-16T14:04:50.823Z",
+      "can_create_projects": false,
+      "default_hourly_rate": 1624011022794752,
+      "cost_rate": 10267280801792,
+      "roles": [
+        "Product Tactics Analyst",
+        "Product Functionality Supervisor",
+        "Dynamic Web Facilitator",
+        "Investor Web Engineer",
+        "Regional Division Associate"
+      ],
+      "access_roles": [
+        "curo"
+      ],
+      "permissions_claims": [
+        "termes",
+        "totus",
+        "optio"
+      ],
+      "avatar_url": "https://avatars.githubusercontent.com/u/73375020"
+    },
+    {
+      "id": 5,
+      "first_name": "Leland",
+      "last_name": "Jaskolski",
+      "email": "Sean0@gmail.com",
+      "telephone": "328.613.4258 x64468",
+      "timezone": "Africa/Abidjan",
+      "weekly_capacity": 7,
+      "has_access_to_all_future_projects": false,
+      "is_contractor": false,
+      "is_active": false,
+      "calendar_integration_enabled": true,
+      "calendar_integration_source": {},
+      "created_at": "2023-02-24T22:34:24.649Z",
+      "updated_at": "2023-06-24T12:55:37.602Z",
+      "can_create_projects": false,
+      "default_hourly_rate": 3065827307814912,
+      "cost_rate": 6323147798216704,
+      "roles": [],
+      "access_roles": [
+        "pecco"
+      ],
+      "permissions_claims": [
+        "annus"
+      ],
+      "avatar_url": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/298.jpg"
+    },
+    {
+      "id": 6,
+      "first_name": "Murray",
+      "last_name": "Kshlerin",
+      "email": "Baron55@hotmail.com",
+      "telephone": "(942) 970-4545",
+      "timezone": "Asia/Dubai",
+      "weekly_capacity": 13,
+      "has_access_to_all_future_projects": false,
+      "is_contractor": true,
+      "is_active": true,
+      "calendar_integration_enabled": false,
+      "calendar_integration_source": {},
+      "created_at": "2023-02-09T09:16:59.614Z",
+      "updated_at": "2023-05-12T23:24:41.147Z",
+      "can_create_projects": false,
+      "default_hourly_rate": 853762384068608,
+      "cost_rate": 1959869670227968,
+      "roles": [
+        "Regional Group Specialist",
+        "Dynamic Communications Strategist",
+        "Regional Functionality Supervisor"
+      ],
+      "access_roles": [
+        "derelinquo"
+      ],
+      "permissions_claims": [
+        "sto",
+        "pauper",
+        "vaco"
+      ],
+      "avatar_url": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/509.jpg"
+    },
+    {
+      "id": 7,
+      "first_name": "Tyrel",
+      "last_name": "Conn",
+      "email": "Horacio.Lang8@yahoo.com",
+      "telephone": "743.819.8379",
+      "timezone": "America/Yellowknife",
+      "weekly_capacity": 19,
+      "has_access_to_all_future_projects": true,
+      "is_contractor": true,
+      "is_active": true,
+      "calendar_integration_enabled": false,
+      "calendar_integration_source": {},
+      "created_at": "2022-10-03T01:51:45.569Z",
+      "updated_at": "2023-09-05T19:15:14.239Z",
+      "can_create_projects": true,
+      "default_hourly_rate": 4454704031465472,
+      "cost_rate": 2206949777080320,
+      "roles": [
+        "Principal Usability Director",
+        "Human Brand Engineer"
+      ],
+      "access_roles": [
+        ""
+      ],
+      "permissions_claims": [
+        "civis"
+      ],
+      "avatar_url": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/1242.jpg"
+    },
+    {
+      "id": 8,
+      "first_name": "Janis",
+      "last_name": "Blanda",
+      "email": "Misty2@gmail.com",
+      "telephone": "(431) 740-7538 x8845",
+      "timezone": "Europe/Podgorica",
+      "weekly_capacity": 27,
+      "has_access_to_all_future_projects": true,
+      "is_contractor": false,
+      "is_active": true,
+      "calendar_integration_enabled": false,
+      "calendar_integration_source": {},
+      "created_at": "2022-09-22T06:48:58.704Z",
+      "updated_at": "2023-09-15T04:05:00.884Z",
+      "can_create_projects": true,
+      "default_hourly_rate": 8584571851374592,
+      "cost_rate": 6346724756946944,
+      "roles": [],
+      "access_roles": [
+        "dolor",
+        "titulus",
+        "atavus"
+      ],
+      "permissions_claims": [
+        "tonsor",
+        "canis",
+        "consuasor"
+      ],
+      "avatar_url": "https://avatars.githubusercontent.com/u/90392174"
+    },
+    {
+      "id": 9,
+      "first_name": "Aurelio",
+      "last_name": "Corwin",
+      "email": "Tressa.Fadel53@yahoo.com",
+      "telephone": "(370) 927-7012 x364",
+      "timezone": "Africa/Windhoek",
+      "weekly_capacity": 33,
+      "has_access_to_all_future_projects": false,
+      "is_contractor": false,
+      "is_active": false,
+      "calendar_integration_enabled": true,
+      "calendar_integration_source": {},
+      "created_at": "2022-05-20T08:14:26.691Z",
+      "updated_at": "2022-12-27T03:29:47.536Z",
+      "can_create_projects": true,
+      "default_hourly_rate": 6177771942313984,
+      "cost_rate": 7331918079066112,
+      "roles": [
+        "Principal Assurance Associate",
+        "Future Response Engineer"
+      ],
+      "access_roles": [
+        "cena"
+      ],
+      "permissions_claims": [
+        "necessitatibus",
+        "varietas",
+        "stipes"
+      ],
+      "avatar_url": "https://cloudflare-ipfs.com/ipfs/Qmd3W5DuhgHirLHGVixi6V76LhCkZUz6pnFt5AJBiyvHye/avatar/54.jpg"
+    }
+  ],
+  "harvestTimeEntries": [
+    {
+      "id": 10,
+      "spent_date": "2023-08-14T13:29:33.148Z",
+      "user": {
+        "id": 5,
+        "name": "Leland Jaskolski"
+      },
+      "project": {
+        "id": 11
+      },
+      "task": {
+        "id": 12
+      }
+    },
+    {
+      "id": 13,
+      "spent_date": "2023-01-26T20:39:36.407Z",
+      "user": {
+        "id": 1,
+        "name": "Esta Huel"
+      },
+      "project": {
+        "id": 14
+      },
+      "task": {
+        "id": 15
+      }
+    },
+    {
+      "id": 16,
+      "spent_date": "2023-09-27T16:11:57.899Z",
+      "user": {
+        "id": 8,
+        "name": "Janis Blanda"
+      },
+      "project": {
+        "id": 17
+      },
+      "task": {
+        "id": 18
+      }
+    },
+    {
+      "id": 19,
+      "spent_date": "2023-03-01T21:34:04.068Z",
+      "user": {
+        "id": 8,
+        "name": "Janis Blanda"
+      },
+      "project": {
+        "id": 20
+      },
+      "task": {
+        "id": 21
+      }
+    },
+    {
+      "id": 22,
+      "spent_date": "2023-09-09T05:35:42.302Z",
+      "user": {
+        "id": 3,
+        "name": "Bobbie Metz"
+      },
+      "project": {
+        "id": 23
+      },
+      "task": {
+        "id": 24
+      }
+    },
+    {
+      "id": 25,
+      "spent_date": "2023-08-16T07:01:46.458Z",
+      "user": {
+        "id": 7,
+        "name": "Tyrel Conn"
+      },
+      "project": {
+        "id": 26
+      },
+      "task": {
+        "id": 27
+      }
+    },
+    {
+      "id": 28,
+      "spent_date": "2023-09-01T12:10:42.718Z",
+      "user": {
+        "id": 4,
+        "name": "Darrion Gutmann-Macejkovic"
+      },
+      "project": {
+        "id": 29
+      },
+      "task": {
+        "id": 30
+      }
+    },
+    {
+      "id": 31,
+      "spent_date": "2023-02-24T23:25:57.390Z",
+      "user": {
+        "id": 3,
+        "name": "Bobbie Metz"
+      },
+      "project": {
+        "id": 32
+      },
+      "task": {
+        "id": 33
+      }
+    },
+    {
+      "id": 34,
+      "spent_date": "2023-03-03T17:59:55.109Z",
+      "user": {
+        "id": 2,
+        "name": "Brain Jerde"
+      },
+      "project": {
+        "id": 35
+      },
+      "task": {
+        "id": 36
+      }
+    },
+    {
+      "id": 37,
+      "spent_date": "2023-01-14T22:40:02.199Z",
+      "user": {
+        "id": 6,
+        "name": "Murray Kshlerin"
+      },
+      "project": {
+        "id": 38
+      },
+      "task": {
+        "id": 39
+      }
+    }
+  ]
+}
