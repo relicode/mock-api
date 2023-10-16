@@ -1,12 +1,7 @@
 import { faker } from '@faker-js/faker'
 import type { PartialDeep } from 'type-fest'
-
 import type { HarvestTimeEntry, HarvestUser } from './types/utils/types.js'
-import { getConfig, createLogger } from './utils.js'
-import { access, constants, readFile } from 'fs/promises'
-import chalk from 'chalk'
-
-const { red } = chalk
+import { createLogger } from './utils.js'
 
 const logger = createLogger('generate-mock-data')
 
@@ -15,7 +10,7 @@ const generateId = (() => {
   return () => counter++
 })()
 
-export const generateHarvestUser = (props: Partial<HarvestUser> | HarvestUser): HarvestUser => {
+const generateHarvestUser = (props: Partial<HarvestUser> | HarvestUser): HarvestUser => {
   const updatedAt = faker.date.past()
   const createdAt = faker.date.past({ refDate: updatedAt })
 
@@ -52,7 +47,7 @@ export const generateHarvestUser = (props: Partial<HarvestUser> | HarvestUser): 
   }
 }
 
-export const generateTimeEntry = (
+const generateTimeEntry = (
   { id, first_name, last_name }: HarvestUser,
   props: PartialDeep<HarvestTimeEntry> = {},
 ): typeof props => ({
@@ -64,30 +59,8 @@ export const generateTimeEntry = (
 })
 
 const harvestUsers = Array.from({ length: 10 }, generateHarvestUser)
-
 const harvestTimeEntries = Array.from({ length: 10 }, () => generateTimeEntry(faker.helpers.arrayElement(harvestUsers)))
+const data = { harvestUsers, harvestTimeEntries }
+export type MockData = typeof data
 
-export const generateData = () => ({
-  harvestUsers,
-  harvestTimeEntries,
-})
-
-export const loadJsonData = async (): Promise<Record<string, unknown>> => {
-  const { dataPath } = getConfig()
-  if (!dataPath) return generateData()
-  try {
-    await access(dataPath, constants.R_OK)
-    const fileContent = await readFile(dataPath, 'utf8')
-    return JSON.parse(fileContent)
-  } catch (e) {
-    logger.error(`Can't access or parse ${red(dataPath)}`, e)
-    process.exit(1)
-  }
-}
-
-const generateRE = /generate-mock-data/gi
-if (process.argv.some((arg) => generateRE.test(arg))) {
-  const data = await loadJsonData()
-  logger.console(JSON.stringify(data, null, 2))
-  process.exit(0)
-}
+if (process.env.PRINT_MOCK_DATA) logger.console.log(JSON.stringify(data, null, 2)) // eslint-disable-line no-process-env
