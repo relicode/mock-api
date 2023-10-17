@@ -17,8 +17,10 @@
     "init:git-hooks": "cd \"$npm_config_local_prefix/.git/hooks\"; for hook in \"$(find ../../git-hooks -type f)\"; do ln -s\"$([ \"$HOOK_OVERWRITE\" ] && printf 'f')\" \"$hook\" \"$(basename \"$hook\")\"; done",
     "lint": "eslint --max-warnings 0 src",
     "node-ts": "node --no-warnings --loader ts-node/esm",
-    "test": "npm run node-ts tests/index.ts",
-    "test:get": "curl -X GET http://localhost:9000/2015-03-31/functions/function/invocations  --data-binary '{}'",
+    "test": "npm run test:unit",
+    "test:unit": "./run-unit-tests.sh",
+    "test:system": "npm run node-ts tests/index.ts",
+    "test:get": "curl -X GET http://localhost:9000/2015-03-31/functions/function/invocations",
     "test:post": "curl -X POST http://localhost:9000/2015-03-31/functions/function/invocations --data-binary '@./tests/test-events/post.json'"
   },
   "keywords": [],

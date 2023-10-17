@@ -92,18 +92,16 @@ export const parseResult: ParseResult = ({ body, ...rest } = {}) => ({
   ...(body && { body: JSON.stringify(body) }),
 })
 
-type Service = 'cinode' | 'harvest' | 'hibob'
+const serviceCinodeRE = new RegExp('^/api.cinode.com/.*')
+const serviceHarvestRE = new RegExp('^/api.harvestapp.com/v2/.*')
+const serviceHiBobRE = new RegExp('^/api.hibob.com/v1/.*')
 
-const baseUrlServiceMapping: Record<string, Service> = {
-  'https://api.cinode.com': 'cinode',
-  'https://api.harvestapp.com/v2/': 'harvest',
-  'https://api.hibob.com/v1/': 'hibob',
-} as const
-
-export const resolveService = (baseUrl: string) => {
-  const fromMapping = baseUrlServiceMapping[baseUrl]
-  if (!fromMapping) throw new Error(`Unknown service for ${baseUrl}`)
-  return fromMapping
+export const resolveService = (ev: APIGatewayProxyEventV2): 'cinode' | 'harvest' | 'hibob' => {
+  const { path } = ev.requestContext.http
+  if (serviceCinodeRE.test(path)) return 'cinode'
+  if (serviceHarvestRE.test(path)) return 'harvest'
+  if (serviceHiBobRE.test(path)) return 'hibob'
+  throw new Error(`Unknown service for ${path}`)
 }
 
 export const extractHeaders = (event: APIGatewayProxyEventV2, ...headers: string[]) => {
