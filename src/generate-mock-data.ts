@@ -61,6 +61,7 @@ const generateTimeEntry = (
 const harvestUsers = Array.from({ length: 10 }, generateHarvestUser)
 const harvestTimeEntries = Array.from({ length: 10 }, () => generateTimeEntry(faker.helpers.arrayElement(harvestUsers)))
 const data = { harvestUsers, harvestTimeEntries }
+
 export type MockData = typeof data
 
-if (process.env.PRINT_MOCK_DATA) logger.console.log(JSON.stringify(data, null, 2)) // eslint-disable-line no-process-env
+logger.console.log(JSON.stringify(data, null, 2))

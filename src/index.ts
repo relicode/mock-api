@@ -1,18 +1,12 @@
 #!/usr/bin/env node
 
 import { createLogger, parseResult } from './utils'
-import { APIGatewayProxyEvent, APIGatewayProxyResult, Handler } from 'aws-lambda'
-
-type APIGatewayProxyHandler = Handler<APIGatewayProxyEvent, APIGatewayProxyResult>
+import { APIGatewayProxyHandlerV2 } from 'aws-lambda'
 
 const handlerLogger = createLogger('handler')
 
-export const handler: APIGatewayProxyHandler = async (ev, ctx) => {
-  handlerLogger.log(ev)
-  handlerLogger.log(ctx)
+export const handler: APIGatewayProxyHandlerV2 = async (ev, ctx) => {
+  handlerLogger.console.log(ev)
 
-  const result = parseResult({ headers: { 'Custome-Header': 'Custom header value' } })
-  handlerLogger.table(result.body)
-
-  return result
+  return parseResult({ headers: { 'Custom-Header': 'Custom header set by server' }, body: { ev, ctx } })
 }

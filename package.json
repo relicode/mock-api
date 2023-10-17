@@ -8,11 +8,15 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "esbuild src/index.ts --bundle --platform=node --packages=external --format=esm --outfile=index.js",
+    "build:app": "esbuild src/index.ts --bundle --platform=node --packages=external --format=esm --outfile=index.js",
+    "build:docker": "./download-rie.sh && docker compose build",
     "emulator:start": "./download-rie.sh && docker compose up --build --force-recreate --remove-orphans",
-    "emulator:test": "curl http://localhost:9000/2015-03-31/functions/function/invocations -d '{\"payload\":\"hello world!\"}'",
+    "generate:mock-data": "npm run --silent node-ts ./src/generate-mock-data.ts",
     "init:git-hooks": "cd \"$npm_config_local_prefix/.git/hooks\"; for hook in \"$(find ../../git-hooks -type f)\"; do ln -s \"$hook\" \"$(basename \"$hook\")\"; done",
-    "lint": "eslint --max-warnings 0 src"
+    "lint": "eslint --max-warnings 0 src",
+    "test:get": "curl -X GET http://localhost:9000/2015-03-31/functions/function/invocations --data-binary '@./test-events/get.json'",
+    "test:post": "curl -X POST http://localhost:9000/2015-03-31/functions/function/invocations --data-binary '@./test-events/post.json'",
+    "node-ts": "node --no-warnings --loader ts-node/esm"
   },
   "keywords": [],
   "author": "",
@@ -27,15 +31,12 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "ts-node": "^10.9.1",
-    "type-fest": "^4.4.0",
-    "wait-on": "^7.0.1"
+    "type-fest": "^4.4.0"
   },
   "dependencies": {
     "@faker-js/faker": "^8.1.0",
     "chalk": "^5.3.0",
     "esbuild": "^0.19.4",
-    "json-server": "^0.17.4",
-    "lodash": "^4.17.21",
-    "lowdb": "^6.0.1"
+    "lodash": "^4.17.21"
   }
 }

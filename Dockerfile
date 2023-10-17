@@ -4,6 +4,10 @@ WORKDIR /build
 COPY src ./src
 COPY package*.json data.json entry.sh aws-lambda-rie ./
 
+# Required for Node runtimes which use npm@8.6.0+ because
+# by default npm writes logs under /home/.npm and Lambda fs is read-only
+ENV NPM_CONFIG_CACHE=/tmp/.npm
+
 RUN set -ex && \
   apt-get update && \
   apt-get install -y \
@@ -15,14 +19,10 @@ RUN set -ex && \
   npm install -g npm@10.2.0 && \
   npm i && \
   npm i aws-lambda-ric && \
-  npm run build && \
+  npm run build:app && \
   rm -rf src
 
 FROM node:20.8.0-alpine3.17
-
-# Required for Node runtimes which use npm@8.6.0+ because
-# by default npm writes logs under /home/.npm and Lambda fs is read-only
-ENV NPM_CONFIG_CACHE=/tmp/.npm
 
 COPY --from=build-image /build /lambda
 COPY --from=build-image /build/aws-lambda-rie /usr/local/bin/aws-lambda-rie

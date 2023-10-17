@@ -1,0 +1,56 @@
+{
+  "ctx": {
+    "callbackWaitsForEmptyEventLoop": true,
+    "functionVersion": "$LATEST",
+    "functionName": "wunderdog-integration-dev-echo",
+    "memoryLimitInMB": "256",
+    "logGroupName": "/aws/lambda/wunderdog-integration-dev-echo",
+    "logStreamName": "2023/10/17/[$LATEST]24c7a213d9ed43e29ce2dc0789afc220",
+    "invokedFunctionArn": "arn:aws:lambda:eu-west-3:411836754714:function:wunderdog-integration-dev-echo",
+    "awsRequestId": "1bcedae2-daaa-4e72-bb2d-f77758f51e2d"
+  },
+  "ev": {
+    "version": "2.0",
+    "routeKey": "$default",
+    "rawPath": "/api.hibob.com/v1/users",
+    "rawQueryString": "paramA=valueA",
+    "headers": {
+      "sec-fetch-mode": "cors",
+      "x-amzn-tls-version": "TLSv1.2",
+      "accept-language": "*",
+      "x-forwarded-proto": "https",
+      "x-forwarded-port": "443",
+      "x-forwarded-for": "212.225.225.37",
+      "my-custom-header": "My value",
+      "accept": "*/*",
+      "x-amzn-tls-cipher-suite": "ECDHE-RSA-AES128-GCM-SHA256",
+      "x-amzn-trace-id": "Root=1-652e43e9-12e90795617c05e61d06de1f",
+      "host": "uqs5bnr6y26zp6wapaylpgwyxq0rqlaf.lambda-url.eu-west-3.on.aws",
+      "accept-encoding": "br, gzip, deflate",
+      "user-agent": "undici"
+    },
+    "queryStringParameters": {
+      "paramA": "valueA"
+    },
+    "requestContext": {
+      "accountId": "anonymous",
+      "apiId": "uqs5bnr6y26zp6wapaylpgwyxq0rqlaf",
+      "domainName": "uqs5bnr6y26zp6wapaylpgwyxq0rqlaf.lambda-url.eu-west-3.on.aws",
+      "domainPrefix": "uqs5bnr6y26zp6wapaylpgwyxq0rqlaf",
+      "http": {
+        "method": "GET",
+        "path": "/api.hibob.com/v1/users",
+        "protocol": "HTTP/1.1",
+        "sourceIp": "212.225.225.37",
+        "userAgent": "undici"
+      },
+      "requestId": "1bcedae2-daaa-4e72-bb2d-f77758f51e2d",
+      "routeKey": "$default",
+      "stage": "$default",
+      "time": "17/Oct/2023:08:20:57 +0000",
+      "timeEpoch": 1697530857027
+    },
+    "isBase64Encoded": false
+  }
+}
+

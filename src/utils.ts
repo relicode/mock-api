@@ -17,9 +17,23 @@ const dataPath = process.env.DATA_PATH || resolve(__dirname, './data.json')
 
 type LogType = keyof typeof chalk & ('green' | 'yellow' | 'red')
 
+const mapArg = (arg: unknown) => {
+  if (typeof arg === 'string') return arg
+  if (typeof arg === 'number') return JSON.stringify(arg)
+  try {
+    JSON.stringify(arg, null, 2)
+  } catch {
+    if (arg !== null && typeof arg === 'object' && typeof arg.toString === 'function') {
+      const afterToString = arg.toString()
+      if (typeof afterToString === 'string') return afterToString
+      throw new Error('toString returns something other than string')
+    }
+  }
+}
+
 export const createLogger = (prefix = faker.lorem.words()) => {
   const log = (logType?: LogType, ...args: unknown[]) => {
-    console.log(`[${logType ? chalk.bold[logType](prefix) : chalk.bold(prefix)}]`, ...args)
+    console.log(`[${logType ? chalk.bold[logType](prefix) : chalk.bold(prefix)}]`, ...args.map(mapArg))
   }
 
   return {
@@ -29,7 +43,7 @@ export const createLogger = (prefix = faker.lorem.words()) => {
     log: (...args: unknown[]) => log(undefined, ...args),
     success: (...args: unknown[]) => log('green', ...args),
     warn: (...args: unknown[]) => log('yellow', ...args),
-    error: (...args: unknown[]) => log('red', ...args.map((a) => (typeof a === 'string' ? a : JSON.stringify(a)))),
+    error: (...args: unknown[]) => log('red', ...args),
   }
 }
 
