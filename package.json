@@ -5,18 +5,21 @@
   "description": "",
   "type": "module",
   "engines": {
-    "node": ">=18"
+    "node": "=20"
   },
   "scripts": {
-    "build:app": "esbuild src/index.ts --bundle --platform=node --packages=external --format=esm --outfile=index.js",
-    "build:docker": "./download-rie.sh && docker compose build",
-    "emulator:start": "./download-rie.sh && docker compose up --build --force-recreate --remove-orphans",
+    "build:app": "esbuild --bundle src/index.ts --platform=node --packages=external --format=esm --outfile=index.js --sourcemap",
+    "build:app:prod": "npm run build:app -- --minify",
+    "build:docker": "docker compose build",
+    "start": "docker compose up --remove-orphans",
+    "start:build": "npm start -- --force-recreate --build",
     "generate:mock-data": "npm run --silent node-ts ./src/generate-mock-data.ts",
-    "init:git-hooks": "cd \"$npm_config_local_prefix/.git/hooks\"; for hook in \"$(find ../../git-hooks -type f)\"; do ln -s \"$hook\" \"$(basename \"$hook\")\"; done",
+    "init:git-hooks": "cd \"$npm_config_local_prefix/.git/hooks\"; for hook in \"$(find ../../git-hooks -type f)\"; do ln -s\"$([ \"$HOOK_OVERWRITE\" ] && printf 'f')\" \"$hook\" \"$(basename \"$hook\")\"; done",
     "lint": "eslint --max-warnings 0 src",
-    "test:get": "curl -X GET http://localhost:9000/2015-03-31/functions/function/invocations --data-binary '@./test-events/get.json'",
-    "test:post": "curl -X POST http://localhost:9000/2015-03-31/functions/function/invocations --data-binary '@./test-events/post.json'",
-    "node-ts": "node --no-warnings --loader ts-node/esm"
+    "node-ts": "node --no-warnings --loader ts-node/esm",
+    "test": "npm run node-ts tests/index.ts",
+    "test:get": "curl -X GET http://localhost:9000/2015-03-31/functions/function/invocations  --data-binary '{}'",
+    "test:post": "curl -X POST http://localhost:9000/2015-03-31/functions/function/invocations --data-binary '@./tests/test-events/post.json'"
   },
   "keywords": [],
   "author": "",
@@ -25,9 +28,9 @@
     "@types/aws-lambda": "^8.10.124",
     "@types/json-server": "^0.14.5",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "axios": "^1.5.1",
     "chokidar": "^3.5.3",
     "chokidar-cli": "^3.0.0",
-    "concurrently": "^8.2.1",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "ts-node": "^10.9.1",

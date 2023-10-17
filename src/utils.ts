@@ -4,31 +4,31 @@
 import { faker } from '@faker-js/faker'
 import chalk from 'chalk'
 import { readFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
 import { MockData } from './generate-mock-data'
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
 import _ from 'lodash'
 
 import * as url from 'url'
 
 const __filename = url.fileURLToPath(import.meta.url)
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
-const dataPath = process.env.DATA_PATH || resolve(__dirname, './data.json')
 
 type LogType = keyof typeof chalk & ('green' | 'yellow' | 'red')
 
-const mapArg = (arg: unknown) => {
-  if (typeof arg === 'string') return arg
-  if (typeof arg === 'number') return JSON.stringify(arg)
-  try {
-    JSON.stringify(arg, null, 2)
-  } catch {
-    if (arg !== null && typeof arg === 'object' && typeof arg.toString === 'function') {
-      const afterToString = arg.toString()
-      if (typeof afterToString === 'string') return afterToString
-      throw new Error('toString returns something other than string')
+const mapArg = <T = unknown>(arg: T): string | typeof arg => {
+  if (typeof arg === 'string' || typeof arg === 'number') return String(arg)
+
+  if (arg !== null && typeof arg === 'object') {
+    try {
+      return JSON.stringify(arg, null, 2)
+    } catch {
+      if (typeof arg.toString === 'function') {
+        const stringified = arg.toString()
+        if (typeof stringified === 'string') return stringified
+      }
     }
   }
+  return arg
 }
 
 export const createLogger = (prefix = faker.lorem.words()) => {
@@ -48,37 +48,48 @@ export const createLogger = (prefix = faker.lorem.words()) => {
 }
 
 const logger = createLogger('utils')
+const dataPath = '/data.json' as const
 
-export const loadJsonData = async <T extends Record<string, unknown> = MockData>(): Promise<T> => {
+export const loadJsonData = async <T extends Record<string, unknown> = MockData>(
+  filePath: string = dataPath,
+): Promise<T> => {
   try {
-    return JSON.parse(await readFile(dataPath, 'utf8'))
+    const data = await readFile(filePath, 'utf8')
+    logger.log(data)
+    return JSON.parse(data)
   } catch (e) {
-    logger.error(`Can't access or parse ${logger.chalk.red(dataPath)}`, e)
+    logger.error(`Can't access or parse ${logger.chalk.red(filePath)}`, e)
     process.exit(1)
   }
 }
 
-type ParsedAPIGatewayProxyResult = Omit<APIGatewayProxyResult, 'body'> & { body: Record<string, unknown> }
+type ParsedAPIGatewayProxyResult = Omit<APIGatewayProxyResultV2, 'body'> & { body: string | Record<string, unknown> }
 
-const jsonResultHeaders = {
+export const jsonHeaders = {
   'Content-Type': 'application/json',
 } as const
 
-const defaultResult: ParsedAPIGatewayProxyResult = {
+const defaultResult: APIGatewayProxyResultV2 = {
   statusCode: 200,
-  headers: { ...jsonResultHeaders },
-  body: {},
+  headers: jsonHeaders,
   isBase64Encoded: false,
 } as const
 
-export const parseBody = <T extends Record<string, unknown> = Record<string, unknown>>(ev: APIGatewayProxyEvent): T =>
-  ev.body ? JSON.parse(ev.body) : {}
+export const parseBody = <T extends Record<string, unknown>>(ev: APIGatewayProxyEventV2): T => {
+  try {
+    logger.log(ev.body)
+    return ev.body ? JSON.parse(ev.body) : {}
+  } catch {
+    const errorMessage = `Couldn't parse body of ${ev}`
+    logger.error(errorMessage)
+    throw new Error(errorMessage)
+  }
+}
 
-type ParseResult = (result?: Partial<ParsedAPIGatewayProxyResult>) => APIGatewayProxyResult
-
-export const parseResult: ParseResult = ({ body, ...rest } = defaultResult) => ({
+type ParseResult = (result?: Partial<ParsedAPIGatewayProxyResult>) => APIGatewayProxyResultV2
+export const parseResult: ParseResult = ({ body, ...rest } = {}) => ({
   ..._.merge({ ...defaultResult }, rest),
-  body: JSON.stringify(body || defaultResult.body),
+  ...(body && { body: JSON.stringify(body) }),
 })
 
 type Service = 'cinode' | 'harvest' | 'hibob'
@@ -95,7 +106,7 @@ export const resolveService = (baseUrl: string) => {
   return fromMapping
 }
 
-export const extractHeaders = (event: APIGatewayProxyEvent, ...headers: string[]) => {
+export const extractHeaders = (event: APIGatewayProxyEventV2, ...headers: string[]) => {
   const extractedHeaders = new Headers()
   for (const headerKey of headers) {
     const header = event.headers[headerKey]
