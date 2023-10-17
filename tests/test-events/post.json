@@ -1,0 +1,59 @@
+{
+  "ctx": {
+    "callbackWaitsForEmptyEventLoop": true,
+    "functionVersion": "$LATEST",
+    "functionName": "wunderdog-integration-dev-echo",
+    "memoryLimitInMB": "256",
+    "logGroupName": "/aws/lambda/wunderdog-integration-dev-echo",
+    "logStreamName": "2023/10/17/[$LATEST]24c7a213d9ed43e29ce2dc0789afc220",
+    "invokedFunctionArn": "arn:aws:lambda:eu-west-3:411836754714:function:wunderdog-integration-dev-echo",
+    "awsRequestId": "f4b0271d-18c8-4311-837d-12be33e349c1"
+  },
+  "ev": {
+    "version": "2.0",
+    "routeKey": "$default",
+    "rawPath": "/api.hibob.com/v1/users",
+    "rawQueryString": "paramA=valueA",
+    "headers": {
+      "sec-fetch-mode": "cors",
+      "content-length": "23",
+      "x-amzn-tls-version": "TLSv1.2",
+      "accept-language": "*",
+      "x-forwarded-proto": "https",
+      "x-forwarded-port": "443",
+      "x-forwarded-for": "212.225.225.37",
+      "my-custom-header": "My value",
+      "accept": "*/*",
+      "x-amzn-tls-cipher-suite": "ECDHE-RSA-AES128-GCM-SHA256",
+      "x-amzn-trace-id": "Root=1-652e4360-3f7bfdb96f37ad82332e5019",
+      "host": "uqs5bnr6y26zp6wapaylpgwyxq0rqlaf.lambda-url.eu-west-3.on.aws",
+      "content-type": "text/plain;charset=UTF-8",
+      "accept-encoding": "br, gzip, deflate",
+      "user-agent": "undici"
+    },
+    "queryStringParameters": {
+      "paramA": "valueA"
+    },
+    "requestContext": {
+      "accountId": "anonymous",
+      "apiId": "uqs5bnr6y26zp6wapaylpgwyxq0rqlaf",
+      "domainName": "uqs5bnr6y26zp6wapaylpgwyxq0rqlaf.lambda-url.eu-west-3.on.aws",
+      "domainPrefix": "uqs5bnr6y26zp6wapaylpgwyxq0rqlaf",
+      "http": {
+        "method": "POST",
+        "path": "/api.hibob.com/v1/users",
+        "protocol": "HTTP/1.1",
+        "sourceIp": "212.225.225.37",
+        "userAgent": "undici"
+      },
+      "requestId": "f4b0271d-18c8-4311-837d-12be33e349c1",
+      "routeKey": "$default",
+      "stage": "$default",
+      "time": "17/Oct/2023:08:18:40 +0000",
+      "timeEpoch": 1697530720778
+    },
+    "body": "{\"a\":\"A\",\"b\":{\"c\":\"C\"}}",
+    "isBase64Encoded": false
+  }
+}
+

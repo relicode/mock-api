@@ -16,7 +16,7 @@ export declare const getConfig: () => {
   HARVEST_API_BASE_URL: 'https://api.harvestapp.com/v2/'
   PUBLIC_HOLIDAYS: string[]
   CINODE_API_BASE_URL: 'https://api.cinode.com'
-  cinodeAbsences: Record<string, import('./types').CinodeAbsenceType>
+  // cinodeAbsences: Record<string, import('./types').CinodeAbsenceType>
   HARVEST_REPORT_MESSAGE: {
     readonly CONSULTANT_SUBJECT: 'Conflicting time entries between HiBob and Harvest'
     readonly CONSULTANT_MESSAGE: 'Conflicting time entries between HiBob and Harvest were found. Please check them.'

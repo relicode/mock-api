@@ -1,3 +1,5 @@
 mock-api-0.0.1.tgz
 node_modules
 dist
+/index.js*
+aws-lambda-rie

@@ -4,45 +4,44 @@
   "private": true,
   "description": "",
   "type": "module",
-  "bin": {
-    "generate-mock-data": "./generate-mock-data.sh"
-  },
   "engines": {
-    "node": ">=18"
+    "node": "=20"
   },
   "scripts": {
-    "build": "swc src --copy-files -d dist",
-    "dev": "npm run build && concurrently --timings -c auto 'npm:build -- --watch' 'npm:start'",
-    "generate": "node ./dist/generate-mock-data.js",
-    "generate:dev": "node --no-warnings --loader ts-node/esm ./src/generate-mock-data.ts",
-    "init:git-hooks": "cd \"$npm_config_local_prefix/.git/hooks\"; for hook in \"$(find ../../git-hooks -type f)\"; do ln -s \"$hook\" \"$(basename \"$hook\")\"; done",
+    "build:app": "esbuild --bundle src/index.ts --platform=node --packages=external --format=esm --outfile=index.js --sourcemap",
+    "build:app:prod": "npm run build:app -- --minify",
+    "build:docker": "docker compose build",
+    "start": "docker compose up --remove-orphans",
+    "start:build": "npm start -- --force-recreate --build",
+    "generate:mock-data": "npm run --silent node-ts ./src/generate-mock-data.ts",
+    "init:git-hooks": "cd \"$npm_config_local_prefix/.git/hooks\"; for hook in \"$(find ../../git-hooks -type f)\"; do ln -s\"$([ \"$HOOK_OVERWRITE\" ] && printf 'f')\" \"$hook\" \"$(basename \"$hook\")\"; done",
     "lint": "eslint --max-warnings 0 src",
-    "postbuild": "npm pack",
-    "start": "node dist/index.js"
+    "node-ts": "node --no-warnings --loader ts-node/esm",
+    "test": "npm run test:unit",
+    "test:unit": "./run-unit-tests.sh",
+    "test:system": "npm run node-ts tests/index.ts",
+    "test:get": "curl -X GET http://localhost:9000/2015-03-31/functions/function/invocations",
+    "test:post": "curl -X POST http://localhost:9000/2015-03-31/functions/function/invocations --data-binary '@./tests/test-events/post.json'"
   },
   "keywords": [],
   "author": "",
-  "license": "Proprietary",
-  "files": [
-    "dist"
-  ],
+  "license": "BSD-3-Clause",
   "devDependencies": {
-    "@swc/cli": "^0.1.62",
-    "@swc/core": "^1.3.92",
+    "@types/aws-lambda": "^8.10.124",
     "@types/json-server": "^0.14.5",
     "@typescript-eslint/eslint-plugin": "^6.7.5",
+    "axios": "^1.5.1",
     "chokidar": "^3.5.3",
     "chokidar-cli": "^3.0.0",
-    "concurrently": "^8.2.1",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
-    "type-fest": "^4.4.0",
-    "wait-on": "^7.0.1"
+    "ts-node": "^10.9.1",
+    "type-fest": "^4.4.0"
   },
   "dependencies": {
     "@faker-js/faker": "^8.1.0",
     "chalk": "^5.3.0",
-    "json-server": "^0.17.4",
-    "lowdb": "^6.0.1"
+    "esbuild": "^0.19.4",
+    "lodash": "^4.17.21"
   }
 }
