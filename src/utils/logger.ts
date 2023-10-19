@@ -29,13 +29,13 @@ const createRandomPrefix = (() => {
   return () => [faker.lorem.words(), String(counter++)].join('__')
 })()
 
-type LoggerConfig = Partial<{
+export type DefaultLoggerConfig = Partial<{
   prefix: string
   unique: boolean
   devOnly: boolean
 }>
 
-type DevOnlyLoggerConfig = LoggerConfig & {
+export type DevOnlyDefaultLoggerConfig = DefaultLoggerConfig & {
   devOnly: true
 }
 
@@ -49,14 +49,15 @@ type Logger = {
 }
 
 type DevOnlyLogger = Omit<Logger, 'chalk' | 'console'>
+export type LoggerConfig = string | DevOnlyDefaultLoggerConfig | DefaultLoggerConfig
 
-export function createLogger(config: DevOnlyLoggerConfig): DevOnlyLogger
-export function createLogger(config: LoggerConfig): Logger
+export function createLogger(config: DevOnlyDefaultLoggerConfig): DevOnlyLogger
+export function createLogger(config: DefaultLoggerConfig): Logger
 export function createLogger(config: string | undefined): Logger
-export function createLogger(config?: string | DevOnlyLoggerConfig | LoggerConfig): DevOnlyLogger | Logger {
+export function createLogger(config?: LoggerConfig) {
   const isDevOnlyLogger = typeof config === 'object' && !!config.devOnly
-  const prefix = (typeof config === 'object' ? config.prefix : config) || createRandomPrefix()
-  const unique = typeof config === 'object' && !!config.unique
+  const configBase = typeof config === 'object' ? config : { prefix: config }
+  const { prefix = createRandomPrefix(), unique = true } = configBase
 
   if (unique && prefixes.includes(prefix)) throw new Error(`Prefix '${prefix}' already exists.`)
 

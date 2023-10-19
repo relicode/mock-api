@@ -8,11 +8,14 @@
     "node": "=20"
   },
   "scripts": {
+    "prebuild": "./download-rie.sh",
+    "build": "npm run build:app && npm run build:docker",
     "build:app": "esbuild --bundle src/index.ts --platform=node --packages=external --format=esm --outfile=index.js --sourcemap",
     "build:app:prod": "npm run build:app -- --minify",
     "build:docker": "docker compose build",
     "generate:mock-data": "tsx tests/generate-mock-data",
     "init:git-hooks": "cd \"$npm_config_local_prefix/.git/hooks\"; for hook in \"$(find ../../git-hooks -type f)\"; do ln -s\"$([ \"$HOOK_OVERWRITE\" ] && printf 'f')\" \"$hook\" \"$(basename \"$hook\")\"; done",
+    "lint": "concurrently -c auto --timings 'npm:lint:*'",
     "lint:eslint": "eslint --max-warnings 0 .",
     "lint:tsc": "tsc --noEmit",
     "start": "docker compose up --remove-orphans",
