@@ -4,7 +4,6 @@
 import { faker } from '@faker-js/faker'
 import chalk from 'chalk'
 import { readFile } from 'node:fs/promises'
-import { MockData } from './generate-mock-data'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
 import _ from 'lodash'
 
@@ -50,9 +49,7 @@ export const createLogger = (prefix = faker.lorem.words()) => {
 const logger = createLogger('utils')
 const dataPath = '/data.json' as const
 
-export const loadJsonData = async <T extends Record<string, unknown> = MockData>(
-  filePath: string = dataPath,
-): Promise<T> => {
+export const loadJsonData = async <T extends Record<string, unknown>>(filePath: string = dataPath): Promise<T> => {
   try {
     const data = await readFile(filePath, 'utf8')
     logger.log(data)

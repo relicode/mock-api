@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker'
 import type { PartialDeep } from 'type-fest'
-import type { HarvestTimeEntry, HarvestUser } from './types/utils/types.js'
-import { createLogger } from './utils.js'
+import type { HarvestTimeEntry, HarvestUser } from '../src/types/utils/types'
+import { createLogger } from '../src/utils'
 
 const logger = createLogger('generate-mock-data')
 
