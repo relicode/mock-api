@@ -1,55 +1,15 @@
-/* eslint-disable no-process-env */
-/* eslint-disable no-console */
-
-import { faker } from '@faker-js/faker'
 import chalk from 'chalk'
 import { readFile } from 'node:fs/promises'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from 'aws-lambda'
 import _ from 'lodash'
-
-import * as url from 'url'
-
-const __filename = url.fileURLToPath(import.meta.url)
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
-
-type LogType = keyof typeof chalk & ('green' | 'yellow' | 'red')
-
-const mapArg = <T = unknown>(arg: T): string | typeof arg => {
-  if (typeof arg === 'string' || typeof arg === 'number') return String(arg)
-
-  if (arg !== null && typeof arg === 'object') {
-    try {
-      return JSON.stringify(arg, null, 2)
-    } catch {
-      if (typeof arg.toString === 'function') {
-        const stringified = arg.toString()
-        if (typeof stringified === 'string') return stringified
-      }
-    }
-  }
-  return arg
-}
-
-export const createLogger = (prefix = faker.lorem.words()) => {
-  const log = (logType?: LogType, ...args: unknown[]) => {
-    console.log(`[${logType ? chalk.bold[logType](prefix) : chalk.bold(prefix)}]`, ...args.map(mapArg))
-  }
-
-  return {
-    chalk,
-    console,
-    table: console.table,
-    log: (...args: unknown[]) => log(undefined, ...args),
-    success: (...args: unknown[]) => log('green', ...args),
-    warn: (...args: unknown[]) => log('yellow', ...args),
-    error: (...args: unknown[]) => log('red', ...args),
-  }
-}
+import config from './config'
+import { createLogger } from './logger'
 
 const logger = createLogger('utils')
-const dataPath = '/data.json' as const
 
-export const loadJsonData = async <T extends Record<string, unknown>>(filePath: string = dataPath): Promise<T> => {
+export const loadJsonData = async <T extends Record<string, unknown>>(
+  filePath: string = config.dataPath,
+): Promise<T> => {
   try {
     const data = await readFile(filePath, 'utf8')
     logger.log(data)
@@ -112,12 +72,3 @@ export const extractHeaders = (event: APIGatewayProxyEventV2, ...headers: string
   }
   return { headers: extractedHeaders }
 }
-
-const config = (() => ({
-  __dirname,
-  __filename,
-  useAuth: !process.env.NO_AUTH,
-  port: process.env.PORT ? parseInt(process.env.PORT, 10) : 8080,
-}))()
-
-export default config
