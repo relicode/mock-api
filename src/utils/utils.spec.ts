@@ -2,9 +2,10 @@ import { APIGatewayProxyEventV2 } from 'aws-lambda'
 import { strict as assert } from 'node:assert'
 import { describe, it } from 'node:test'
 
-import { resolveService } from './utils'
+import { Service } from '.'
+import { resolveService } from './api-gw'
 
-const generateEventForServiceResolution = (path: string) =>
+const gen = (path: string) =>
   ({
     requestContext: {
       http: {
@@ -13,17 +14,37 @@ const generateEventForServiceResolution = (path: string) =>
     },
   }) as APIGatewayProxyEventV2
 
-describe('utils work as expected', () => {
-  it('should work', () => {
-    assert.equal(resolveService(generateEventForServiceResolution('/api.cinode.com/')), 'cinode')
-    assert.equal(resolveService(generateEventForServiceResolution('/api.cinode.com/a')), 'cinode')
-    assert.equal(resolveService(generateEventForServiceResolution('/api.cinode.com/a/b/c?yy=kaa')), 'cinode')
-    assert.equal(resolveService(generateEventForServiceResolution('/api.harvestapp.com/v2/eeh')), 'harvest')
-    assert.equal(resolveService(generateEventForServiceResolution('/api.hibob.com/v1/')), 'hibob')
+describe('right service is derived from event', () => {
+  const validPaths = [
+    ['api.cinode.com/', Service.CINODE, ''],
+    ['api.cinode.com/a', Service.CINODE, 'a'],
+    ['api.cinode.com/a/b/c?yy=kaa', Service.CINODE, 'a/b/c'],
+    ['api.hibob.com/v1/', Service.HIBOB, ''],
+    ['api.harvestapp.com/v2/eeh', Service.HARVEST, 'eeh'],
+  ]
 
-    assert.throws(() => resolveService(generateEventForServiceResolution('api.cinode.com/')))
-    assert.throws(() => resolveService(generateEventForServiceResolution('/https://api.cinode.com/')))
-    assert.throws(() => resolveService(generateEventForServiceResolution('https://api.cinode.com/')))
-    assert.throws(() => resolveService(generateEventForServiceResolution('/api.harvestapp.com/v1/')))
-  })
+  for (const [path, expectedService, expectedPath] of validPaths) {
+    it(`Path ${path} should resolve to service ${expectedService} with path of ${expectedPath}.`, () => {
+      assert.deepEqual(resolveService(gen(path)), [expectedService, expectedPath])
+    })
+  }
+
+  const invalidPaths = [
+    'https://weighty-footwear.net',
+    'https://spiteful-underwear.biz',
+    'https://wobbly-claw.org',
+    'https://incompatible-eavesdropper.info',
+    'https://wary-farm.name',
+    'https://white-veneer.name',
+    'https://leading-corsage.net/',
+    'https://thin-spelt.biz/',
+    'https://pastel-singing.com/',
+    'https://slippery-victim.net/',
+  ]
+
+  for (const path of invalidPaths) {
+    it(`Path ${path} should throw an error.`, () => {
+      assert.throws(() => resolveService(gen(path)))
+    })
+  }
 })

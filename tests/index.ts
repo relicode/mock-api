@@ -18,5 +18,5 @@ const api = axios.create({
 
 const resp = await api.get('', { data })
 logger.log(resp.headers)
-console.log(resp.data)
+logger.log(resp.data)
 logger.log(JSON.parse(resp.data.body))

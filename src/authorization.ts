@@ -1,19 +1,13 @@
-import { createLogger, extractHeaders } from './utils.js'
-import { APIGatewayProxyEvent } from 'aws-lambda'
+import { extractHeaders, resolveService } from './utils'
+import { APIGatewayProxyEventV2 } from 'aws-lambda'
 
-const logger = createLogger('authorization-middleware')
+export const checkAuthorization = async (ev: APIGatewayProxyEventV2) => {
+  const [service, _path] = resolveService(ev)
 
-export const checkAuthorization = async (event: APIGatewayProxyEvent) => {
-  const split = event.path.split('/')
-  const [_, service, ...rest] = split
-  logger.log({ service, path: rest.join('/') })
   switch (service) {
     case 'harvest':
       return (
-        await fetch(
-          'https://api.harvestapp.com/v2/users/me',
-          extractHeaders(event, 'Authorization', 'Harvest-Account-Id'),
-        )
+        await fetch('https://api.harvestapp.com/v2/users/me', extractHeaders(ev, 'authorization', 'harvest-account-id'))
       ).status
   }
   return 401
