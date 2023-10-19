@@ -1,7 +1,8 @@
-import { resolveService } from './utils.js'
 import { APIGatewayProxyEventV2 } from 'aws-lambda'
 import { strict as assert } from 'node:assert'
 import { describe, it } from 'node:test'
+
+import { resolveService } from './utils'
 
 const generateEventForServiceResolution = (path: string) =>
   ({
