@@ -24,7 +24,7 @@
     "test:apigw:get": "curl -X GET http://localhost:9000/2015-03-31/functions/function/invocations",
     "test:apigw:post": "curl -X POST http://localhost:9000/2015-03-31/functions/function/invocations --data-binary '@./tests/test-events/post.json'",
     "test:unit": "tsx --test $(find src -name '*.spec.ts')"
-  },
+  },  
   "keywords": [],
   "author": "",
   "license": "BSD-3-Clause",
