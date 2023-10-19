@@ -93,9 +93,9 @@ export const createFetcher = (options?: Partial<FetcherConfig>) => {
     throw new Error([errorStart, errorDetails].join(' '))
   }
 
-  const fetchJson = async <R extends Jsonifiable, B extends Jsonifiable = EmptyObject>(
+  const fetchJsonResponse = async <T extends Jsonifiable, B extends Jsonifiable = EmptyObject>(
     ...[url, init]: JSONFetchParams<B>
-  ): Promise<{ response: Response; json: R }> => {
+  ): Promise<{ response: Response; json: T }> => {
     const allowBody = init && init.method !== 'GET' && init.method !== 'HEAD'
 
     const parsedInit = {
@@ -105,7 +105,7 @@ export const createFetcher = (options?: Partial<FetcherConfig>) => {
     }
 
     const response = await customFetch(url, parsedInit)
-    const json = (await response.json()) as R
+    const json = (await response.json()) as T
     const jsonResponse = {
       response,
       json,
@@ -113,8 +113,13 @@ export const createFetcher = (options?: Partial<FetcherConfig>) => {
     return jsonResponse
   }
 
+  const fetchJson = async <T extends Jsonifiable, B extends Jsonifiable = EmptyObject>(
+    ...[url, init]: JSONFetchParams<B>
+  ): Promise<T> => (await fetchJsonResponse<T, B>(url, init)).json
+
   return {
     fetch: customFetch,
     fetchJson,
+    fetchJsonResponse,
   }
 }
