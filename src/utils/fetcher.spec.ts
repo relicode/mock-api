@@ -1,26 +1,25 @@
 import { strict as assert } from 'node:assert'
-import { describe, it } from 'node:test'
+import test from 'node:test'
 
 import { createFetcher } from '.'
 
-const baseUrl = 'https://api.punkapi.com/v2'
-const genUrl = (...args: string[]) => [baseUrl, ...args].join('/')
+const fetcher = createFetcher()
 
-// const logger = createLogger('fetcher.spec.ts')
-
-describe('fetcher', () => {
-  const fetcher = createFetcher()
-
-  it('createFetcher is a function', () => {
+test('fetcher instanciates', async (t) => {
+  await t.test('createFetcher is a function', () => {
     assert.equal(typeof createFetcher, 'function')
   })
 
-  it('fetcher is an object', () => {
+  await t.test('fetcher is an object', () => {
     assert.equal(typeof fetcher, 'object')
   })
+})
 
-  it('fetches specific beer', async () => {
-    const { json } = await await fetcher.fetchJson(genUrl('beers/256'))
+test('fetch makes api calls', async (t) => {
+  const genUrl = (...args: string[]) => ['https://api.punkapi.com/v2', ...args].join('/')
+
+  await t.test('fetches specific beer', async () => {
+    const { json } = await fetcher.fetchJson(genUrl('beers/256'))
     if (!Array.isArray(json)) throw new Error('Invalid response')
 
     assert.deepEqual(
@@ -31,7 +30,7 @@ describe('fetcher', () => {
     )
   })
 
-  it('fetches a random beer', async () => {
+  await t.test('fetches a random beer', async () => {
     const response = await fetcher.fetch(genUrl('beers/random'))
     assert.equal(response.status, 200)
   })

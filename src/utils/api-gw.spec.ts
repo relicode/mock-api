@@ -1,6 +1,6 @@
 import { APIGatewayProxyEventV2 } from 'aws-lambda'
 import { strict as assert } from 'node:assert'
-import { describe, it } from 'node:test'
+import test from 'node:test'
 
 import { Service } from '.'
 import { resolveService } from './api-gw'
@@ -14,7 +14,7 @@ const gen = (path: string) =>
     },
   }) as APIGatewayProxyEventV2
 
-describe('right service is derived from event', () => {
+test('right service is derived from event', async (t) => {
   const validPaths = [
     ['api.cinode.com/', Service.CINODE, ''],
     ['api.cinode.com/a', Service.CINODE, 'a'],
@@ -24,11 +24,13 @@ describe('right service is derived from event', () => {
   ]
 
   for (const [path, expectedService, expectedPath] of validPaths) {
-    it(`Path ${path} should resolve to service ${expectedService} with path of ${expectedPath}.`, () => {
+    await t.test(`Path ${path} should resolve to service ${expectedService} with path of ${expectedPath}.`, () => {
       assert.deepEqual(resolveService(gen(path)), [expectedService, expectedPath])
     })
   }
+})
 
+test('invalid paths throw an error', async (t) => {
   const invalidPaths = [
     'https://weighty-footwear.net',
     'https://spiteful-underwear.biz',
@@ -43,8 +45,8 @@ describe('right service is derived from event', () => {
   ]
 
   for (const path of invalidPaths) {
-    it(`Path ${path} should throw an error.`, () => {
-      assert.throws(() => resolveService(gen(path)))
+    await t.test(`Path ${path} should return undefined.`, () => {
+      assert.equal(resolveService(gen(path)), undefined)
     })
   }
 })
