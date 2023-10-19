@@ -1,7 +1,7 @@
 import axios from 'axios'
 import * as url from 'url'
 import { resolve } from 'path'
-import { createLogger, jsonHeaders, loadJsonData } from '../src/utils.js'
+import { createLogger, jsonHeaders, loadJsonData } from '../src/utils'
 
 // const __filename = url.fileURLToPath(import.meta.url)
 const __dirname = url.fileURLToPath(new URL('.', import.meta.url))
