@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import type { DevOnlyDefaultLoggerConfig, LoggerConfig } from '.'
+import type { LoggerConfig } from '.'
 import { createLogger, delay, getErrorMessage, jsonHeaders } from '.'
 import type { EmptyObject, Jsonifiable } from 'type-fest'
 
@@ -12,7 +12,6 @@ type FetcherConfig = {
 const defaultConfig: FetcherConfig = {
   loggerConfig: {
     prefix: 'fetcher',
-    devOnly: true,
   },
   interval: 250,
   retries: 2,
@@ -38,18 +37,16 @@ const extractUrl = (input: RequestInfo) => {
 export const createFetcher = (options?: Partial<FetcherConfig>) => {
   const { loggerConfig, retries, interval } = _.merge(defaultConfig, options)
 
-  const fetchLoggerConfig: DevOnlyDefaultLoggerConfig =
+  const devLogger = createLogger(
     typeof loggerConfig === 'string'
       ? {
           prefix: loggerConfig,
-          devOnly: true,
         }
       : {
           ...loggerConfig,
-          devOnly: true,
-        }
-
-  const devLogger = createLogger(fetchLoggerConfig)
+        },
+    true,
+  )
 
   type SingleFetch = (...args: [...FetchParams, retryCounter: number]) => Promise<Response | string>
 
