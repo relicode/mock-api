@@ -1,6 +1,6 @@
 import _ from 'lodash'
 import type { DevOnlyDefaultLoggerConfig, LoggerConfig } from '.'
-import { createLogger, delay, getErrorMessage } from '.'
+import { createLogger, delay, getErrorMessage, jsonHeaders } from '.'
 import type { EmptyObject, Jsonifiable } from 'type-fest'
 
 type FetcherConfig = {
@@ -93,28 +93,39 @@ export const createFetcher = (options?: Partial<FetcherConfig>) => {
     throw new Error([errorStart, errorDetails].join(' '))
   }
 
-  const fetchJson = async <R extends Jsonifiable, B extends Jsonifiable = EmptyObject>(
-    ...[url, init]: JSONFetchParams<B>
-  ): Promise<{ response: Response; json: R }> => {
-    const allowBody = init && init.method !== 'GET' && init.method !== 'HEAD'
+  const emptyBodyMethods = ['GET', 'HEAD'] as const
+  const [GET] = emptyBodyMethods
 
+  const fetchJsonResponse = async <T extends Jsonifiable, B extends Jsonifiable = EmptyObject>(
+    ...[input, init]: JSONFetchParams<B>
+  ): Promise<{ response: Response; json: T }> => {
+    const method = (init?.method || GET) as (typeof emptyBodyMethods)[number]
+
+    const headers = new Headers(init?.headers)
+    for (const [key, val] of Object.entries(jsonHeaders)) {
+      if (!headers.has(key)) headers.set(key, val)
+    }
+
+    const allowBody = emptyBodyMethods.includes(method)
     const parsedInit = {
       ...init,
       ...(allowBody && { body: JSON.stringify(init?.body || {}) }),
       body: allowBody && init?.body ? JSON.stringify(init.body || {}) : undefined,
+      headers,
     }
 
-    const response = await customFetch(url, parsedInit)
-    const json = (await response.json()) as R
-    const jsonResponse = {
-      response,
-      json,
-    }
-    return jsonResponse
+    const response = await customFetch(input, parsedInit)
+    const json = (await response.json()) as T
+    return { json, response }
   }
+
+  const fetchJson = async <T extends Jsonifiable, B extends Jsonifiable = EmptyObject>(
+    ...[url, init]: JSONFetchParams<B>
+  ): Promise<T> => (await fetchJsonResponse<T, B>(url, init)).json
 
   return {
     fetch: customFetch,
     fetchJson,
+    fetchJsonResponse,
   }
 }
