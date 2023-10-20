@@ -23,8 +23,6 @@ const stringify = (arg: unknown): string | unknown => {
   }
 }
 
-const prefixes = new Array<string>()
-
 const createRandomPrefix = (() => {
   let counter = 0
   return () => [faker.lorem.words(), String(counter++)].join('__')
@@ -45,15 +43,17 @@ type Logger = {
   warn: (...args: unknown[]) => void
   error: (...args: unknown[]) => void
 }
-
 type DevOnlyLogger = Omit<Logger, 'chalk' | 'console'>
+
+const prefixes = new Array<string>()
 
 export function createLogger(config: LoggerConfig, devOnlyLogger: true): DevOnlyLogger
 export function createLogger(config?: LoggerConfig, devOnlyLogger?: false): Logger
 export function createLogger(config?: LoggerConfig, devOnlyLogger?: boolean) {
-  const configBase = typeof config === 'object' ? config : { prefix: config }
-  const { prefix = createRandomPrefix(), unique = true } = configBase
+  const configBase = typeof config === 'object' ? config : { prefix: config, unique: true }
+  const { prefix = createRandomPrefix(), unique } = configBase
   if (unique && prefixes.includes(prefix)) throw new Error(`Prefix '${prefix}' already exists.`)
+  else if (unique) prefixes.push(prefix)
 
   const log = (logType?: LogType, ...args: unknown[]) => {
     if (devOnlyLogger && !isDevelopment()) return
