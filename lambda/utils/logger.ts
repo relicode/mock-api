@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import chalk, { ChalkInstance } from 'chalk'
-import { isDevelopment } from './config'
+import { isDevelopment } from './config.js'
 
 type LogType = keyof typeof chalk & ('green' | 'yellow' | 'red')
 
