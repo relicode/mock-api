@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { checkAuthorization, parseResult } from './utils'
+import { checkAuthorization, parseResult } from './utils/index.js'
 import { APIGatewayProxyHandler } from 'aws-lambda'
 
 export const handler: APIGatewayProxyHandler = async (ev, ctx) => {

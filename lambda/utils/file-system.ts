@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 
-import { createLogger, getConfig, getErrorMessage } from '.'
+import { createLogger, getConfig, getErrorMessage } from './index.js'
 
 const logger = createLogger('file-system')
 

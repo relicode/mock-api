@@ -1,6 +1,6 @@
 import _ from 'lodash'
-import type { LoggerConfig } from '.'
-import { createLogger, delay, getErrorMessage, jsonHeaders } from '.'
+import type { LoggerConfig } from './logger.js'
+import { createLogger, delay, getErrorMessage, jsonHeaders } from './index.js'
 import type { EmptyObject, Jsonifiable } from 'type-fest'
 
 type FetcherConfig = {
@@ -101,7 +101,9 @@ export const createFetcher = (options?: Partial<FetcherConfig>) => {
 
     const headers = new Headers(init?.headers)
     for (const [key, val] of Object.entries(jsonHeaders)) {
-      if (!headers.has(key)) headers.set(key, val)
+      if (!headers.has(key))
+        logger.warn(`Header '${key}' already exists (${headers.get(key)}), overwriting with '${val}'.`)
+      headers.set(key, val)
     }
 
     const allowBody = emptyBodyMethods.includes(method)

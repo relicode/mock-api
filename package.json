@@ -1,10 +1,14 @@
 {
   "name": "hibob-integration-mock-api",
   "version": "0.0.1",
+  "type": "module",
   "engines": {
     "node": "20.8.0",
     "npm": "10.1.0",
-    "os": ["darwin", "linux"]
+    "os": [
+      "darwin",
+      "linux"
+    ]
   },
   "bin": {
     "hibob-integration-mock-api": "bin/hibob-integration-mock-api.js"
@@ -13,10 +17,17 @@
     "auth": "aws sso login",
     "dev:aws": "cdk watch",
     "dev:local": "cdk synth --no-staging && sam local start-api -t ./cdk.out/HibobIntegrationMockApiStack.template.json",
-    "lint": "concurrently -c auto 'npm:lint:*'",
+    "generate:mock-data": "tsx ./src/generate-mock-data.ts",
+    "init": "concurrently -c auto --timings 'npm:init:*'",
+    "init-overwrite": "HOOK_OVERWRITE=true npm run init",
+    "init:vs-code": "rsync -avuP vscode-config/ .vscode",
+    "init:git-hooks": "cd \"$npm_config_local_prefix/.git/hooks\"; for hook in \"$(find ../../git-hooks -type f)\"; do ln -s\"$([ \"$HOOK_OVERWRITE\" ] && printf 'f')\" \"$hook\" \"$(basename \"$hook\")\"; done",
     "lint:es": "eslint --max-warnings 0 bin lambda lib test tsconfig.json package.json cdk.json",
     "lint:tsc": "tsc --noEmit",
-    "test": "tsx --test ./**/*.test.ts ./*/**/*.test.ts"
+    "postinstall": "npm run init",
+    "test": "concurrently -c auto --timings 'npm:test:*' 'npm:lint:*'",
+    "test:system": "tsx --test ./**/*.test.ts",
+    "test:unit": "tsx --test ./*/**/*.test.ts"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.2.0",

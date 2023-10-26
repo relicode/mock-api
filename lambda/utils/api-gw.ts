@@ -1,22 +1,38 @@
-import { APIGatewayProxyEvent, APIGatewayProxyEventPathParameters, APIGatewayProxyResult } from 'aws-lambda'
+import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyEventHeaders,
+  APIGatewayProxyEventPathParameters,
+  APIGatewayProxyResult,
+} from 'aws-lambda'
 import _ from 'lodash'
 
-import { createLogger, Service } from '.'
+import { createLogger, Service } from './index.js'
 
 const logger = createLogger('api-gw-utils')
 
 type ParsedAPIGatewayProxyResult = Omit<APIGatewayProxyResult, 'body'> & { body: string | Record<string, unknown> }
 
-export const extractHeaders = (ev: APIGatewayProxyEvent, ...headerNames: Lowercase<string>[]) => {
-  const headers = new Headers()
-  const lowercaseHeaders = _.mapKeys(ev.headers, (_, key) => key.toLowerCase())
+type HeadersSource = { headers: APIGatewayProxyEventHeaders } | HeadersInit
 
-  for (const headerKey of headerNames) {
-    const header = lowercaseHeaders[headerKey]
-    if (!header) logger.warn(`Header ${logger.chalk.bold(headerKey)} not found`)
-    else headers.set(headerKey, header)
-  }
-  return headers
+/**
+ *
+ * Maps source into a object representing headers
+ *
+ * @param source APIGatewayProxyEvent | Record<string, string | undefined> | Headers
+ *
+ * @return Object with lowercase keys and potentially combined string values separated by ', '
+ *
+ * @example
+ * ```ts
+ *  // Returns { 'content-type': 'first one, second one' }
+ *  parseHeaders({ 'Content-Type': 'first one', 'content-type': 'second one' })
+ * ```
+ */
+export const parseHeaders = (source: HeadersSource): Record<Lowercase<string>, string> => {
+  if ('headers' in source) return Object.fromEntries(new Headers(source.headers as Record<string, string>))
+  return Object.fromEntries(
+    new Headers('headers' in source ? (source.headers as unknown as Record<string, string>) : source),
+  )
 }
 
 export const parseBody = <T extends Record<string, unknown>>(ev: APIGatewayProxyEvent): T => {
@@ -42,7 +58,8 @@ const defaultResult: APIGatewayProxyResult = {
 
 type ParseResult = (result?: Partial<ParsedAPIGatewayProxyResult>) => APIGatewayProxyResult
 export const parseResult: ParseResult = ({ body, ...rest } = {}) => ({
-  ..._.merge({ ...defaultResult }, rest),
+  ...defaultResult,
+  ...rest,
   ...(body && { body: JSON.stringify(body) }),
 })
 

@@ -1,7 +1,7 @@
 /* eslint-disable no-process-env */
 
 import { APIGatewayProxyEvent } from 'aws-lambda'
-import * as constants from './constants'
+import * as constants from './constants.js'
 
 export const isDevelopment = (ev?: APIGatewayProxyEvent) => ev?.requestContext.stage === 'development'
 export const isProduction = (ev?: APIGatewayProxyEvent) => !isDevelopment(ev)

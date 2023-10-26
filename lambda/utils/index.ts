@@ -1,10 +1,10 @@
-export * from './logger'
-export * from './config'
-export * from './constants'
-export * from './api-gw'
-export * from './file-system'
-export * from './fetcher'
-export * from './authorization'
+export * from './logger.js'
+export * from './config.js'
+export * from './constants.js'
+export * from './api-gw.js'
+export * from './file-system.js'
+export * from './fetcher.js'
+export * from './authorization.js'
 
 export const getErrorMessage = (error: unknown) => (error instanceof Error ? error.message : '')
 
