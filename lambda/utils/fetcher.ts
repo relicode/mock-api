@@ -5,7 +5,7 @@ import type { EmptyObject, Jsonifiable } from 'type-fest'
 
 type FetcherConfig = {
   loggerConfig: LoggerConfig
-  interval: number
+  retryInterval: number
   retries: number
 }
 
@@ -13,18 +13,16 @@ const defaultConfig: FetcherConfig = {
   loggerConfig: {
     prefix: 'fetcher',
   },
-  interval: 250,
+  retryInterval: 250,
   retries: 2,
 }
 
 type FetchParams = Parameters<typeof fetch>
 type RequestInfo = FetchParams[0]
-type Init = RequestInit
+type Init = RequestInit // FetchParams[1]
+type Serializable = Jsonifiable | undefined
 
-type JSONFetchParams<T extends Jsonifiable = EmptyObject> = [
-  input: RequestInfo,
-  init?: Omit<Init, 'body'> & { body: T },
-]
+type JSONFetchParams<T extends Serializable> = [input: RequestInfo, init?: Omit<Init, 'body'> & { body?: T }]
 
 const extractUrl = (input: RequestInfo) => {
   let url: string
@@ -35,9 +33,9 @@ const extractUrl = (input: RequestInfo) => {
 }
 
 export const createFetcher = (options?: Partial<FetcherConfig>) => {
-  const { loggerConfig, retries, interval } = _.merge(defaultConfig, options)
+  const { loggerConfig, retries, retryInterval } = _.merge(defaultConfig, options)
 
-  const devLogger = createLogger(
+  const logger = createLogger(
     typeof loggerConfig === 'string'
       ? {
           prefix: loggerConfig,
@@ -45,7 +43,6 @@ export const createFetcher = (options?: Partial<FetcherConfig>) => {
       : {
           ...loggerConfig,
         },
-    true,
   )
 
   type SingleFetch = (...args: [...FetchParams, retryCounter: number]) => Promise<Response | string>
@@ -54,46 +51,50 @@ export const createFetcher = (options?: Partial<FetcherConfig>) => {
     const url = extractUrl(input)
     const retryStub = retryCounter ? `(retry #${retryCounter})` : ''
 
-    devLogger.log(`Fetching ${retryStub} ${url}...`)
+    logger.log(`Fetching ${retryStub} ${url}...`)
 
     try {
       const response = await fetch(input, init)
 
       if (response.ok) {
-        devLogger.log(`Fetch ${retryStub} ${url} successful.`)
+        logger.log(`Fetch ${retryStub} ${url} successful.`)
       } else {
-        devLogger.warn(`Fetch ${retryStub} ${url} not successful (${response.status}).`)
-        devLogger.warn(await response.text())
+        logger.warn(`Fetch ${retryStub} ${url} not successful (${response.status}):`)
       }
       return response
     } catch (e) {
       const errorMessage = getErrorMessage(e)
-      devLogger.error(`Fetch ${retryStub} ${url} errored: ${errorMessage}`, e)
+      logger.error(`Fetch ${retryStub} ${url} errored: ${errorMessage}`, e)
       return errorMessage
     }
   }
 
-  const customFetch = async (...[input, init]: FetchParams) => {
+  const enhancedFetch = async (...[input, init]: FetchParams) => {
     const url = extractUrl(input)
     let response: string | Response = ''
 
     for (let retryCounter = 0; retryCounter <= retries; retryCounter++) {
-      if (retryCounter) await delay(interval)
+      if (retryCounter) await delay(retryInterval)
       response = await singleFetch(input, init, retryCounter)
       if (response instanceof Response && response.ok) return response
     }
 
-    const errorStart = `Failed to fetch ${url}, retried ${retries} times.`
-    const errorDetails = typeof response === 'string' ? response : response.statusText
+    const messageStart = `Failed to fetch ${url}, retried ${retries} times`
 
-    devLogger.error(errorStart, errorDetails)
-    throw new Error([errorStart, errorDetails].join(' '))
+    if (response instanceof Response) {
+      logger.warn(`${messageStart}. Response status: ${response.status}`)
+      return response
+    }
+
+    const errorMessage = `${messageStart}. Error details: ${response}`
+    logger.error(errorMessage)
+    throw new Error(errorMessage)
   }
 
   const emptyBodyMethods = ['GET', 'HEAD'] as const
   const [GET] = emptyBodyMethods
 
-  const fetchJsonResponse = async <T extends Jsonifiable, B extends Jsonifiable = EmptyObject>(
+  const fetchJsonAndResponse = async <T extends Serializable = undefined, B extends Serializable = undefined>(
     ...[input, init]: JSONFetchParams<B>
   ): Promise<{ response: Response; json: T }> => {
     const method = (init?.method || GET) as (typeof emptyBodyMethods)[number]
@@ -111,18 +112,18 @@ export const createFetcher = (options?: Partial<FetcherConfig>) => {
       headers,
     }
 
-    const response = await customFetch(input, parsedInit)
+    const response = await enhancedFetch(input, parsedInit)
     const json = (await response.json()) as T
     return { json, response }
   }
 
-  const fetchJson = async <T extends Jsonifiable, B extends Jsonifiable = EmptyObject>(
+  const fetchJson = <T extends Jsonifiable, B extends Serializable = EmptyObject | undefined>(
     ...[url, init]: JSONFetchParams<B>
-  ): Promise<T> => (await fetchJsonResponse<T, B>(url, init)).json
+  ): Promise<T> => fetchJsonAndResponse<T, B>(url, init).then((response) => response.json)
 
   return {
-    fetch: customFetch,
+    fetch: enhancedFetch,
     fetchJson,
-    fetchJsonResponse,
+    fetchJsonAndResponse,
   }
 }
