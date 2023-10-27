@@ -11,23 +11,23 @@
     ]
   },
   "bin": {
-    "hibob-integration-mock-api": "bin/hibob-integration-mock-api.js"
+    "hibob-integration-mock-api": "bin/synth.ts"
   },
   "scripts": {
     "auth": "aws sso login",
     "dev:aws": "cdk watch",
     "dev:local": "cdk synth --no-staging && sam local start-api -t ./cdk.out/HibobIntegrationMockApiStack.template.json",
-    "generate:mock-data": "tsx ./src/generate-mock-data.ts",
+    "generate:mock-data": "tsx ./test/generate-mock-data.ts",
     "init": "concurrently -c auto --timings 'npm:init:*'",
-    "init-overwrite": "HOOK_OVERWRITE=true npm run init",
     "init:vs-code": "rsync -avuP vscode-config/ .vscode",
     "init:git-hooks": "cd \"$npm_config_local_prefix/.git/hooks\"; for hook in \"$(find ../../git-hooks -type f)\"; do ln -s\"$([ \"$HOOK_OVERWRITE\" ] && printf 'f')\" \"$hook\" \"$(basename \"$hook\")\"; done",
     "lint:es": "eslint --max-warnings 0 bin lambda lib test tsconfig.json package.json cdk.json",
     "lint:tsc": "tsc --noEmit",
-    "postinstall": "npm run init",
-    "test": "concurrently -c auto --timings 'npm:test:*' 'npm:lint:*'",
+    "postinstall": "HOOK_OVERWRITE=true npm run init",
+    "test": "SILENCE_MOCK_DATA=true concurrently --kill-others-on-fail --group --raw --timings 'npm:test:*' 'npm:lint:*' 'npm:generate:mock-data'",
     "test:system": "tsx --test ./**/*.test.ts",
-    "test:unit": "tsx --test ./*/**/*.test.ts"
+    "test:unit": "tsx --test ./*/**/*.test.ts",
+    "test:synth": "bin/synth.ts"
   },
   "devDependencies": {
     "@faker-js/faker": "^8.2.0",
@@ -38,7 +38,7 @@
     "@types/node": "20.7.1",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
-    "aws-cdk": "2.102.0",
+    "aws-cdk": "^2.102.0",
     "concurrently": "^8.2.2",
     "esbuild": "^0.19.5",
     "eslint": "^8.52.0",

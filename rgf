@@ -1,6 +1,0 @@
-#!/bin/sh
-
-PATTERN="$1"
-shift
-
-(for DIR in "${@:-.}"; do rg --files "$DIR"; done) | rg "$PATTERN"

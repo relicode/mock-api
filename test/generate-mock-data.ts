@@ -65,4 +65,4 @@ const data = { harvestUsers, harvestTimeEntries }
 
 export type MockData = typeof data
 
-logger.console.log(JSON.stringify(data, null, 2))
+if (!process.env.SILENCE_MOCK_DATA) logger.console.log(JSON.stringify(data, null, 2)) // eslint-disable-line no-process-env
