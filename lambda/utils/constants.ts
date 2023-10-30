@@ -10,6 +10,8 @@ export enum Service {
 
 export const mockCredentials = {
   [Service.HIBOB]: {
+    // Buffer.from('MOCK_HIBOB_SERVICE_ID:MOCK_HIBOB_SERVICE_TOKEN').toString('base64')
+    authHeader: 'TU9DS19ISUJPQl9TRVJWSUNFX0lEOk1PQ0tfSElCT0JfU0VSVklDRV9UT0tFTg==',
     serviceId: 'MOCK_HIBOB_SERVICE_ID',
     serviceToken: 'MOCK_HIBOB_SERVICE_TOKEN',
   },

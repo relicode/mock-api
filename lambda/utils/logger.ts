@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker'
 import chalk, { ChalkInstance } from 'chalk'
 import { isDevelopment } from './config.js'
 
@@ -23,13 +22,15 @@ const stringify = (arg: unknown): string | unknown => {
   }
 }
 
-const createRandomPrefix = (() => {
+const createDefaultPrefix = (() => {
   let counter = 0
-  return () => [faker.lorem.words(), String(counter++)].join('__')
+  return () => ['logger', String(counter++).padStart(5, '0')].join('__')
 })()
 
+type Prefix = string
+
 export type LoggerConfig =
-  | string
+  | Prefix
   | Partial<{
       prefix: string
       unique: boolean
@@ -51,9 +52,11 @@ export function createLogger(config: LoggerConfig, devOnlyLogger: true): DevOnly
 export function createLogger(config?: LoggerConfig, devOnlyLogger?: false): Logger
 export function createLogger(config?: LoggerConfig, devOnlyLogger?: boolean) {
   const configBase = typeof config === 'object' ? config : { prefix: config, unique: true }
-  const { prefix = createRandomPrefix(), unique } = configBase
-  if (unique && prefixes.includes(prefix)) throw new Error(`Prefix '${prefix}' already exists.`)
-  else if (unique) prefixes.push(prefix)
+  const { prefix = createDefaultPrefix(), unique } = configBase
+  if (unique) {
+    if (prefixes.includes(prefix)) throw new Error(`Prefix '${prefix}' already exists.`)
+    prefixes.push(prefix)
+  }
 
   const log = (logType?: LogType, ...args: unknown[]) => {
     if (devOnlyLogger && !isDevelopment()) return

@@ -16,7 +16,7 @@ type HeadersSource = { headers: APIGatewayProxyEventHeaders } | HeadersInit
 
 /**
  *
- * Maps source into a object representing headers
+ * Maps headers into a plain object representing headers with lowercase keys
  *
  * @param source APIGatewayProxyEvent | Record<string, string | undefined> | Headers
  *
@@ -25,10 +25,10 @@ type HeadersSource = { headers: APIGatewayProxyEventHeaders } | HeadersInit
  * @example
  * ```ts
  *  // Returns { 'content-type': 'first one, second one' }
- *  parseHeaders({ 'Content-Type': 'first one', 'content-type': 'second one' })
+ *  normalizeHeaders({ 'Content-Type': 'first one', 'content-type': 'second one' })
  * ```
  */
-export const parseHeaders = (source: HeadersSource): Record<Lowercase<string>, string> => {
+export const normalizeHeaders = (source: HeadersSource): Record<Lowercase<string>, string> => {
   if ('headers' in source) return Object.fromEntries(new Headers(source.headers as Record<string, string>))
   return Object.fromEntries(
     new Headers('headers' in source ? (source.headers as unknown as Record<string, string>) : source),
