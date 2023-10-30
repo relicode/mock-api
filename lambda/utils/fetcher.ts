@@ -1,7 +1,11 @@
 import _ from 'lodash'
 import type { LoggerConfig } from './logger.js'
-import { createLogger, delay, getErrorMessage, jsonHeaders } from './index.js'
+import { ContentTypes, HeadersNames, createLogger, delay, getErrorMessage } from './index.js'
 import type { EmptyObject, Jsonifiable } from 'type-fest'
+
+const jsonHeaders = {
+  [HeadersNames.CONTENT_TYPE]: ContentTypes.JSON,
+} as const
 
 type FetcherConfig = {
   loggerConfig: LoggerConfig

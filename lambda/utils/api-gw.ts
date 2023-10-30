@@ -4,9 +4,10 @@ import {
   APIGatewayProxyEventPathParameters,
   APIGatewayProxyResult,
 } from 'aws-lambda'
-import _ from 'lodash'
 
-import { createLogger, Service } from './index.js'
+import { StatusCode } from 'status-code-enum'
+
+import { ContentTypes, createLogger, HeadersNames, Service } from './index.js'
 
 const logger = createLogger('api-gw-utils')
 
@@ -28,11 +29,19 @@ type HeadersSource = { headers: APIGatewayProxyEventHeaders } | HeadersInit
  *  normalizeHeaders({ 'Content-Type': 'first one', 'content-type': 'second one' })
  * ```
  */
-export const normalizeHeaders = (source: HeadersSource): Record<Lowercase<string>, string> => {
+export const normalizeHeaders = (source: HeadersSource): Record<Lowercase<string>, string | undefined> => {
   if ('headers' in source) return Object.fromEntries(new Headers(source.headers as Record<string, string>))
   return Object.fromEntries(
     new Headers('headers' in source ? (source.headers as unknown as Record<string, string>) : source),
   )
+}
+
+export const getHeader = (source: HeadersSource, headerName: string) => {
+  const headers = normalizeHeaders(source)
+  const lowercasedHeaderName = headerName.toLowerCase() as Lowercase<string>
+  const value = headers[lowercasedHeaderName]
+  if (!value) throw new Error(`Couldn't find header ${lowercasedHeaderName} in ${JSON.stringify(headers)}`)
+  return value
 }
 
 export const parseBody = <T extends Record<string, unknown>>(ev: APIGatewayProxyEvent): T => {
@@ -45,21 +54,21 @@ export const parseBody = <T extends Record<string, unknown>>(ev: APIGatewayProxy
   }
 }
 
-export const jsonHeaders = {
-  'Content-Type': 'application/json',
-} as const
-
 const defaultResult: APIGatewayProxyResult = {
   body: '{}',
-  statusCode: 200,
-  headers: jsonHeaders,
+  statusCode: StatusCode.SuccessOK,
+  headers: { [HeadersNames.CONTENT_TYPE]: ContentTypes.JSON },
   isBase64Encoded: false,
 } as const
 
 type ParseResult = (result?: Partial<ParsedAPIGatewayProxyResult>) => APIGatewayProxyResult
-export const parseResult: ParseResult = ({ body, ...rest } = {}) => ({
+export const parseResult: ParseResult = ({ body, headers, ...rest } = {}) => ({
   ...defaultResult,
   ...rest,
+  headers: {
+    ...defaultResult.headers,
+    ...headers,
+  },
   ...(body && { body: JSON.stringify(body) }),
 })
 

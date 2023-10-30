@@ -16,3 +16,12 @@ export const mockCredentials = {
     serviceToken: 'MOCK_HIBOB_SERVICE_TOKEN',
   },
 } as const
+
+export enum HeadersNames {
+  AUTHORIZATION = 'authorization',
+  CONTENT_TYPE = 'content-type',
+}
+
+export enum ContentTypes {
+  JSON = 'application/json',
+}

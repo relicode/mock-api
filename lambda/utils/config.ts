@@ -9,7 +9,6 @@ export const isProduction = (ev?: APIGatewayProxyEvent) => !isDevelopment(ev)
 export const getConfig = (ev?: APIGatewayProxyEvent) =>
   Object.freeze({
     constants,
-    useAuth: !process.env.NO_AUTH,
     port: process.env.PORT ? parseInt(process.env.PORT, 10) : constants.PORT,
     nodeEnv: isDevelopment(ev) ? 'development' : 'production',
     dataPath: process.env.DATA_PATH || constants.DATA_PATH,
