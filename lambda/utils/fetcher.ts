@@ -104,11 +104,7 @@ export const createFetcher = (options?: Partial<FetcherConfig>) => {
     const method = (init?.method || GET) as (typeof emptyBodyMethods)[number]
 
     const headers = new Headers(init?.headers)
-    for (const [key, val] of Object.entries(jsonHeaders)) {
-      if (!headers.has(key))
-        logger.warn(`Header '${key}' already exists (${headers.get(key)}), overwriting with '${val}'.`)
-      headers.set(key, val)
-    }
+    for (const [key, val] of Object.entries(jsonHeaders)) headers.append(key, val)
 
     const allowBody = emptyBodyMethods.includes(method)
     const parsedInit = {
