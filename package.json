@@ -4,12 +4,12 @@
   "type": "module",
   "engines": {
     "node": "20.8.0",
-    "npm": "10.1.0",
-    "os": [
-      "darwin",
-      "linux"
-    ]
+    "npm": "10.1.0"
   },
+  "os": [
+    "darwin",
+    "linux"
+  ],
   "bin": {
     "hibob-integration-mock-api": "bin/synth.ts"
   },
@@ -24,9 +24,10 @@
     "lint:es": "eslint --max-warnings 0 bin lambda lib test tsconfig.json package.json cdk.json",
     "lint:tsc": "tsc --noEmit",
     "postinstall": "HOOK_OVERWRITE=true npm run init",
-    "test": "SILENCE_MOCK_DATA=true concurrently --kill-others-on-fail --group --raw --timings 'npm:test:*' 'npm:lint:*' 'npm:generate:mock-data'",
-    "test:system": "tsx --test ./**/*.test.ts",
-    "test:unit": "tsx --test ./*/**/*.test.ts",
+    "test": "SILENCE_MOCK_DATA=true concurrently --kill-others-on-fail --group --raw --timings 'npm:test:all' 'npm:lint:*' 'npm:generate:mock-data'",
+    "test:only:system": "tsx --test ./**/*.test.ts",
+    "test:only:unit": "tsx --test ./*/**/*.test.ts",
+    "test:all": "tsx --test ./**/*.test.ts ./*/**/*.test.ts",
     "test:synth": "bin/synth.ts"
   },
   "devDependencies": {

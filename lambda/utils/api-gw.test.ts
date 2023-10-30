@@ -2,7 +2,7 @@ import { strict as assert } from 'node:assert'
 import test from 'node:test'
 
 import { Service } from './constants.js'
-import { normalizeHeaders, resolveService } from './api-gw.js'
+import { normalizeHeaders, resolveServiceAndPath } from './api-gw.js'
 
 const genEv = (proxy: string) => ({ pathParameters: { proxy } })
 
@@ -67,7 +67,7 @@ test('right service is derived from event', async (t) => {
 
   for (const [url, expectedService, expectedPath] of urls) {
     await t.test(`Path ${url} should resolve to service ${expectedService} with url of ${expectedPath}.`, () => {
-      assert.deepEqual(resolveService(genEv(url)), [expectedService, expectedPath])
+      assert.deepEqual(resolveServiceAndPath(genEv(url)), [expectedService, expectedPath])
     })
   }
 })
@@ -88,7 +88,7 @@ test('invalid paths throw an error', async (t) => {
 
   for (const path of invalidPaths) {
     await t.test(`Path ${path} should return undefined.`, () => {
-      assert.equal(resolveService(genEv(path)), undefined)
+      assert.equal(resolveServiceAndPath(genEv(path)), undefined)
     })
   }
 })

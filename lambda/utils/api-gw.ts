@@ -1,9 +1,4 @@
-import {
-  APIGatewayProxyEvent,
-  APIGatewayProxyEventHeaders,
-  APIGatewayProxyEventPathParameters,
-  APIGatewayProxyResult,
-} from 'aws-lambda'
+import { APIGatewayProxyEvent, APIGatewayProxyEventHeaders, APIGatewayProxyResult } from 'aws-lambda'
 
 import { StatusCode } from 'status-code-enum'
 
@@ -13,7 +8,7 @@ const logger = createLogger('api-gw-utils')
 
 type ParsedAPIGatewayProxyResult = Omit<APIGatewayProxyResult, 'body'> & { body: string | Record<string, unknown> }
 
-type HeadersSource = { headers: APIGatewayProxyEventHeaders } | HeadersInit
+type HeadersSource = Headers | { headers: APIGatewayProxyEventHeaders } | Record<string, string>
 
 /**
  *
@@ -36,11 +31,12 @@ export const normalizeHeaders = (source: HeadersSource): Record<Lowercase<string
   )
 }
 
+// const getHeaderLogger = createLogger('getHeader')
 export const getHeader = (source: HeadersSource, headerName: string) => {
   const headers = normalizeHeaders(source)
   const lowercasedHeaderName = headerName.toLowerCase() as Lowercase<string>
   const value = headers[lowercasedHeaderName]
-  if (!value) throw new Error(`Couldn't find header ${lowercasedHeaderName} in ${JSON.stringify(headers)}`)
+  // getHeaderLogger.log(`Couldn't find header '${lowercasedHeaderName}' in ${JSON.stringify(headers)}`)
   return value
 }
 
@@ -78,20 +74,22 @@ const servicePatterns: Array<[RegExp, Service]> = [
   [new RegExp('https://api.hibob.com/v1'), Service.HIBOB],
 ]
 
-const resolveServiceLogger = createLogger('service-resolver')
+const resolveServiceAndPathLogger = createLogger('service-resolver')
 
-type TrimmedProxyEvent = { pathParameters: APIGatewayProxyEventPathParameters | null }
+type EvWithPathParams = Pick<APIGatewayProxyEvent, 'pathParameters'>
+type ResolveServiceAndPath = (ev: EvWithPathParams) => [service: Service, path: string] | undefined
 
-export const resolveService = (ev: TrimmedProxyEvent): [Service, string] | void => {
+export const resolveServiceAndPath: ResolveServiceAndPath = (ev) => {
   const url = new URL(ev.pathParameters?.proxy || '')
   const urlStr = url.toString()
 
-  resolveServiceLogger.log(`Resolving service for url ${urlStr})`)
+  resolveServiceAndPathLogger.log(`Resolving service for url ${urlStr})`)
   for (const [pattern, serviceName] of servicePatterns) {
     if (pattern.test(urlStr)) {
-      resolveServiceLogger.log(`Resolved service: ${serviceName} for url ${urlStr}`)
+      resolveServiceAndPathLogger.log(`Resolved service: ${serviceName} for url ${urlStr}`)
       return [serviceName, url.pathname]
     }
   }
-  resolveServiceLogger.log(`Failed to resolve service for url ${url})`)
+  resolveServiceAndPathLogger.log(`Failed to resolve service for url ${url})`)
+  return undefined
 }

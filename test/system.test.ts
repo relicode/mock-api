@@ -3,37 +3,75 @@ import 'dotenv/config'
 import { strict as assert } from 'node:assert'
 import test from 'node:test'
 
-import { createFetcher, mockCredentials } from '../lambda/utils/index.js'
+import { ContentTypes, HeadersNames, createFetcher, mockCredentials } from '../lambda/utils/index.js'
 
-const hibobBaseUrl = process.env.BASE_URL // eslint-disable-line no-process-env
-const hibobProxyParam = 'https://api.hibob.com/v1/'
-const hibobUrl = `${hibobBaseUrl}${hibobProxyParam}`
+const api = createFetcher({ loggerConfig: 'system test fetcher', retries: 0 })
+const baseUrl = process.env.BASE_URL // eslint-disable-line no-process-env
+if (!baseUrl) throw new Error('Missing BASE_URL env variable')
 
-const api = createFetcher({ loggerConfig: 'test fetcher' })
+const hibobUrl = `${baseUrl}https://api.hibob.com/v1/`
+const hibobAuthHeaders = {
+  authorization: Buffer.from(`${mockCredentials.hibob.serviceId}:${mockCredentials.hibob.serviceToken}`).toString(
+    'base64',
+  ),
+}
 
-const hibobAuthHeaderBase = `${mockCredentials.hibob.serviceId}:${mockCredentials.hibob.serviceToken}`
+const harvestUrl = `${baseUrl}https://api.harvestapp.com/v2/`
+const harvestAuthHeaders = {
+  'harvest-account-id': 'MOCK_HARVEST_ACCOUNT_ID',
+  authorization: 'Bearer MOCK_HARVEST_ACCESS_TOKEN',
+}
 
-test('API authorizes requests', async (t) => {
-  await t.test('Status 200 with valid credentials', async () => {
-    const { response } = await api.fetchJsonAndResponse(hibobUrl, {
-      headers: { Authorization: Buffer.from(hibobAuthHeaderBase).toString('base64') },
+const jsonHeaders = {
+  [HeadersNames.CONTENT_TYPE]: ContentTypes.JSON,
+} as const
+
+test('Hibob requests are authorized', async (t) => {
+  await t.test('Status 200 with valid hibob credentials', async () => {
+    const response = await api.fetch(hibobUrl, {
+      headers: { ...jsonHeaders, ...hibobAuthHeaders },
     })
     assert.equal(response.status, 200)
   })
 
-  await t.test('Status 401 with invalid credentials', async () => {
-    const { response } = await api.fetchJsonAndResponse(hibobUrl, {
-      headers: {},
-    })
+  await t.test('Status 401 with invalid hibob credentials', async () => {
+    const response = await api.fetch(hibobUrl)
     assert.equal(response.status, 401)
+  })
+
+  await t.test('Status 404 for invalid hibob path', async () => {
+    const response = await api.fetch(hibobUrl.slice(0, -3), {
+      headers: hibobAuthHeaders,
+    })
+    assert.equal(response.status, 404)
   })
 })
 
-test('API responds with invalid', async (t) => {
-  await t.test('Status 404 with invalid path', async () => {
-    const { response } = await api.fetchJsonAndResponse(hibobUrl.slice(0, -3), {
-      headers: { Authorization: Buffer.from(hibobAuthHeaderBase).toString('base64') },
+test('Harvest requests are authorized', async (t) => {
+  await t.test('Status 200 with valid harvest credentials', async () => {
+    const response = await api.fetch(harvestUrl, {
+      headers: { ...jsonHeaders, ...harvestAuthHeaders },
+    })
+    assert.equal(response.status, 200)
+  })
+
+  await t.test('Status 401 with invalid harvest credentials', async () => {
+    const response = await api.fetch(harvestUrl)
+    assert.equal(response.status, 401)
+  })
+
+  await t.test('Status 404 for invalid harvest path', async () => {
+    const response = await api.fetch(harvestUrl.slice(0, -3), {
+      headers: harvestAuthHeaders,
     })
     assert.equal(response.status, 404)
+  })
+})
+
+test('Cinode requests are authorized', async (t) => {
+  await t.test('Status 501 with cinode proxy param', async () => {
+    const url = `${baseUrl}https://api.cinode.com/`
+    const response = await api.fetch(url, { headers: jsonHeaders })
+    assert.equal(response.status, 501)
   })
 })
