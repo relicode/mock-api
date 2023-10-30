@@ -1,9 +1,11 @@
+import 'dotenv/config'
+
 import { strict as assert } from 'node:assert'
 import test from 'node:test'
 
 import { createFetcher, mockCredentials } from '../lambda/utils/index.js'
 
-const hibobBaseUrl = 'https://npadmyefpb.execute-api.eu-north-1.amazonaws.com/mock/'
+const hibobBaseUrl = process.env.BASE_URL // eslint-disable-line no-process-env
 const hibobProxyParam = 'https://api.hibob.com/v1/'
 const hibobUrl = `${hibobBaseUrl}${hibobProxyParam}`
 
