@@ -2,7 +2,7 @@ import { strict as assert } from 'node:assert'
 import test from 'node:test'
 import type { Jsonifiable } from 'type-fest'
 
-import { createFetcher } from './fetcher.js'
+import { createFetcher } from '../../lambda/utils/fetcher.js'
 
 const fetcher = createFetcher()
 

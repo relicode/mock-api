@@ -1,8 +1,8 @@
 import { strict as assert } from 'node:assert'
 import test from 'node:test'
 
-import { Service } from './constants.js'
-import { normalizeHeaders, resolveServiceAndPath } from './api-gw.js'
+import { Service } from '../../lambda/utils/constants.js'
+import { normalizeHeaders, resolveServiceAndPath } from '../../lambda/utils/api-gw.js'
 
 const genEv = (proxy: string) => ({ pathParameters: { proxy } })
 

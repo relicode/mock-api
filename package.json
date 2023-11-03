@@ -26,7 +26,7 @@
     "postinstall": "HOOK_OVERWRITE=true npm run init",
     "test": "SILENCE_MOCK_DATA=true concurrently --kill-others-on-fail --group --raw --timings 'npm:test:all' 'npm:lint:*' 'npm:generate:mock-data'",
     "test:only:system": "tsx --test ./**/*.test.ts",
-    "test:only:unit": "tsx --test ./*/**/*.test.ts",
+    "test:only:unit": "tsx --test ./test/unit/*.ts",
     "test:all": "tsx --test ./**/*.test.ts ./*/**/*.test.ts",
     "test:synth": "bin/synth.ts"
   },
