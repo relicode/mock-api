@@ -34,54 +34,58 @@ export type TimeOff = {
   changeType: HiBobChangeType
   harvestProjectId?: number
 }
+
 export type HarvestTimeEntry = {
   id: number
-  spent_date: string
-  hours: number
-  hours_without_timer: number
-  rounded_hours: number
-  notes: unknown
-  is_locked: boolean
-  locked_reason: unknown
-  is_closed: boolean
-  is_billed: boolean
-  timer_started_at: unknown
-  started_time: unknown
-  ended_time: unknown
-  is_running: boolean
-  billable: boolean
-  budgeted: boolean
-  billable_rate: number
-  cost_rate: unknown
-  created_at: string
-  updated_at: string
   user: {
     id: number
     name: string
   }
+  project: {
+    id: number
+    name?: string
+    // code: unknown
+  }
+  task: {
+    id: number
+    name?: string
+  }
+} & Partial<{
+  spent_date: string
+  hours: number
+  hours_without_timer: number
+  rounded_hours: number
+  // notes: unknown
+  is_locked: boolean
+  // locked_reason: unknown
+  is_closed: boolean
+  is_billed: boolean
+  // timer_started_at: unknown
+  // started_time: unknown
+  // ended_time: unknown
+  is_running: boolean
+  billable: boolean
+  budgeted: boolean
+  billable_rate: number
+  // cost_rate: unknown
+  created_at: string
+  updated_at: string
+
   client: {
     id: number
     name: string
     currency: string
   }
-  project: {
-    id: number
-    name: string
-    code: unknown
-  }
-  task: {
-    id: number
-    name: string
-  }
+
   user_assignment: {
     id: number
     is_project_manager: boolean
     is_active: boolean
     use_default_rates: boolean
-    budget: unknown
+    // budget: unknown
     created_at: string
     updated_at: string
-    hourly_rate: unknown
+    // hourly_rate: unknown
   }
   task_assignment: {
     id: number
@@ -90,23 +94,24 @@ export type HarvestTimeEntry = {
     created_at: string
     updated_at: string
     hourly_rate: number
-    budget: unknown
+    // budget: unknown
   }
-  invoice: unknown
-  external_reference: unknown
-}
+  // invoice: unknown
+  // external_reference: unknown
+}>
+
 export type HarvestTimeEntries = {
   time_entries: HarvestTimeEntry[]
   per_page: number
   total_pages: number
   total_entries: number
-  next_page: unknown
-  previous_page: unknown
+  // next_page: unknown
+  // previous_page: unknown
   page: number
   links: {
     first: string
-    next: unknown
-    previous: unknown
+    // next: unknown
+    // previous: unknown
     last: string
   }
 }
@@ -129,13 +134,13 @@ export type HarvestUser = {
   is_contractor: boolean
   is_active: boolean
   calendar_integration_enabled: boolean
-  calendar_integration_source: unknown
+  // calendar_integration_source: unknown
   created_at: string
   updated_at: string
   can_create_projects: boolean
-  default_hourly_rate: unknown
-  cost_rate: unknown
-  roles: unknown[]
+  default_hourly_rate?: number
+  cost_rate?: number
+  roles: string[]
   access_roles: string[]
   permissions_claims: string[]
   avatar_url: string
@@ -145,13 +150,13 @@ export type HarvestUsers = {
   per_page: number
   total_pages: number
   total_entries: number
-  next_page: unknown
-  previous_page: unknown
+  // next_page: unknown
+  // previous_page: unknown
   page: number
   links: {
     first: string
-    next: unknown
-    previous: unknown
+    // next: unknown
+    // previous: unknown
     last: string
   }
 }
@@ -164,7 +169,7 @@ export type HarvestTask = {
   id: number
   name: HarvestTaskName
   billable_by_default: boolean
-  default_hourly_rate: unknown
+  // default_hourly_rate: unknown
   is_default: boolean
   is_active: boolean
   created_at: string
@@ -175,13 +180,13 @@ export type HarvestTasks = {
   per_page: number
   total_pages: number
   total_entries: number
-  next_page: unknown
-  previous_page: unknown
+  // next_page: unknown
+  // previous_page: unknown
   page: number
   links: {
     first: string
-    next: unknown
-    previous: unknown
+    // next: unknown
+    // previous: unknown
     last: string
   }
 }
@@ -190,10 +195,10 @@ export type HarvestProjectAssignment = {
   is_project_manager: boolean
   is_active: boolean
   use_default_rates: boolean
-  budget: unknown
+  // budget: unknown
   created_at: string
   updated_at: string
-  hourly_rate: unknown
+  // hourly_rate: unknown
   project: {
     id: number
     name: string
@@ -212,13 +217,13 @@ export type HarvestProjectAssignments = {
   per_page: number
   total_pages: number
   total_entries: number
-  next_page: unknown
-  previous_page: unknown
+  // next_page: unknown
+  // previous_page: unknown
   page: number
   links: {
     first: string
-    next: unknown
-    previous: unknown
+    // next: unknown
+    // previous: unknown
     last: string
   }
 }

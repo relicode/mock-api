@@ -32,7 +32,6 @@ test('createStore', async (t) => {
       is_contractor: false,
       is_active: true,
       calendar_integration_enabled: true,
-      calendar_integration_source: {},
       created_at: '2023-01-26T14:14:03.957Z',
       updated_at: '2023-05-10T04:59:18.039Z',
       can_create_projects: true,
@@ -48,6 +47,6 @@ test('createStore', async (t) => {
   })
 
   await t.test('should return the email of the second harvest user', async () => {
-    assert.equal(_.get(state, 'harvestUsers[1].email'), 'Emmanuel.OConnell@yahoo.com')
+    assert.equal(_.get(state, 'harvestUsers[1].email'), 'Katelin.Witting83@gmail.com')
   })
 })
