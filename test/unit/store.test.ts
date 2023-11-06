@@ -8,17 +8,16 @@ import _ from 'lodash'
 
 test('createStore', async (t) => {
   const store = createStore()
-  const { state } = store
 
   await t.test('should return an object with default initial state', async () => {
-    assert.deepEqual(state, initialData)
+    assert.deepEqual(store.getState(), initialData)
   })
 
   await t.test('should return an object with customised initial state', async () => {
     const customSource: MockData = { harvestUsers: [], harvestTimeEntries: [] }
-    const { state: customState } = createStore(customSource)
+    const mutableState = createStore(customSource).getState()
 
-    assert.deepEqual(customState, customSource)
+    assert.deepEqual(mutableState, customSource)
 
     customSource.harvestUsers.push({
       id: 9,
@@ -43,10 +42,10 @@ test('createStore', async (t) => {
       avatar_url: 'https://avatars.githubusercontent.com/u/28666382',
     })
 
-    assert.notDeepEqual(customState, customSource, 'mutating source does not mutate store state')
+    assert.notDeepEqual(mutableState, customSource, 'mutating source does not mutate store state')
   })
 
   await t.test('should return the email of the second harvest user', async () => {
-    assert.equal(_.get(state, 'harvestUsers[1].email'), 'Katelin.Witting83@gmail.com')
+    assert.equal(_.get(store.getState(), 'harvestUsers[1].email'), 'Katelin.Witting83@gmail.com')
   })
 })

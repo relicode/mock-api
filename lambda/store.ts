@@ -6,14 +6,20 @@ import { deepCopy } from './utils/index.js'
 
 const initState = (resetInitialData: MockData): MockData => deepCopy(resetInitialData)
 
-export const createStore = (initialData: MockData = defaultInitialData) => ({
-  state: initState(initialData),
-  getState() {
-    return this.state
-  },
-  reset(resetInitialData: MockData = initialData) {
-    this.state = initState(resetInitialData)
-  },
-})
+export const createStore = (initialData: MockData = defaultInitialData) => {
+  let state = initState(initialData)
+
+  return {
+    getState: (): MockData => state,
+    resetState: (resetInitialData: MockData = initialData): MockData => {
+      state = initState(resetInitialData)
+      return state
+    },
+  }
+}
+
+export type Store = ReturnType<typeof createStore>
+
+export const cloneStore = (store: Store): Store => createStore(store.getState())
 
 export default createStore
