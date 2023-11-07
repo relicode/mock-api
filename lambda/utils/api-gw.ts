@@ -1,22 +1,21 @@
-import {
-  APIGatewayProxyEvent,
-  APIGatewayProxyEventHeaders,
-  APIGatewayProxyEventPathParameters,
-  APIGatewayProxyResult,
-} from 'aws-lambda'
-import _ from 'lodash'
+import { APIGatewayProxyEvent, APIGatewayProxyEventHeaders, APIGatewayProxyResult } from 'aws-lambda'
 
-import { createLogger, Service } from './index.js'
+import { StatusCode } from 'status-code-enum'
+
+import { ContentTypes, createLogger, HeadersNames, Service } from './index.js'
+import { Jsonifiable } from 'type-fest'
 
 const logger = createLogger('api-gw-utils')
 
-type ParsedAPIGatewayProxyResult = Omit<APIGatewayProxyResult, 'body'> & { body: string | Record<string, unknown> }
+export type ParsedAPIGatewayProxyResult = Omit<APIGatewayProxyResult, 'body'> & {
+  body: Jsonifiable
+}
 
-type HeadersSource = { headers: APIGatewayProxyEventHeaders } | HeadersInit
+type HeadersSource = Headers | { headers: APIGatewayProxyEventHeaders } | Record<string, string>
 
 /**
  *
- * Maps source into a object representing headers
+ * Maps headers into a plain object representing headers with lowercase keys
  *
  * @param source APIGatewayProxyEvent | Record<string, string | undefined> | Headers
  *
@@ -25,14 +24,23 @@ type HeadersSource = { headers: APIGatewayProxyEventHeaders } | HeadersInit
  * @example
  * ```ts
  *  // Returns { 'content-type': 'first one, second one' }
- *  parseHeaders({ 'Content-Type': 'first one', 'content-type': 'second one' })
+ *  normalizeHeaders({ 'Content-Type': 'first one', 'content-type': 'second one' })
  * ```
  */
-export const parseHeaders = (source: HeadersSource): Record<Lowercase<string>, string> => {
+export const normalizeHeaders = (source: HeadersSource): Record<Lowercase<string>, string | undefined> => {
   if ('headers' in source) return Object.fromEntries(new Headers(source.headers as Record<string, string>))
   return Object.fromEntries(
     new Headers('headers' in source ? (source.headers as unknown as Record<string, string>) : source),
   )
+}
+
+// const getHeaderLogger = createLogger('getHeader')
+export const getHeader = (source: HeadersSource, headerName: string) => {
+  const headers = normalizeHeaders(source)
+  const lowercasedHeaderName = headerName.toLowerCase() as Lowercase<string>
+  const value = headers[lowercasedHeaderName]
+  // getHeaderLogger.log(`Couldn't find header '${lowercasedHeaderName}' in ${JSON.stringify(headers)}`)
+  return value
 }
 
 export const parseBody = <T extends Record<string, unknown>>(ev: APIGatewayProxyEvent): T => {
@@ -45,23 +53,29 @@ export const parseBody = <T extends Record<string, unknown>>(ev: APIGatewayProxy
   }
 }
 
-export const jsonHeaders = {
-  'Content-Type': 'application/json',
-} as const
-
 const defaultResult: APIGatewayProxyResult = {
   body: '{}',
-  statusCode: 200,
-  headers: jsonHeaders,
+  statusCode: StatusCode.SuccessOK,
+  headers: { [HeadersNames.CONTENT_TYPE]: ContentTypes.JSON },
   isBase64Encoded: false,
 } as const
 
-type ParseResult = (result?: Partial<ParsedAPIGatewayProxyResult>) => APIGatewayProxyResult
-export const parseResult: ParseResult = ({ body, ...rest } = {}) => ({
+const parseResult = ({ body, headers, ...rest }: Partial<ParsedAPIGatewayProxyResult> = {}): APIGatewayProxyResult => ({
   ...defaultResult,
   ...rest,
+  headers: {
+    ...defaultResult.headers,
+    ...headers,
+  },
   ...(body && { body: JSON.stringify(body) }),
 })
+parseResult.ok = (body?: Jsonifiable) => parseResult({ body })
+parseResult.notImplemented = parseResult({
+  statusCode: StatusCode.ServerErrorNotImplemented,
+  body: { errorMessage: 'Not implemented', statusCode: StatusCode.ServerErrorNotImplemented },
+})
+
+export { parseResult }
 
 const servicePatterns: Array<[RegExp, Service]> = [
   [new RegExp('https://api.cinode.com'), Service.CINODE],
@@ -69,20 +83,23 @@ const servicePatterns: Array<[RegExp, Service]> = [
   [new RegExp('https://api.hibob.com/v1'), Service.HIBOB],
 ]
 
-const resolveServiceLogger = createLogger('service-resolver')
+const resolveServiceAndPathLogger = createLogger('service-resolver')
 
-type TrimmedProxyEvent = { pathParameters: APIGatewayProxyEventPathParameters | null }
+type EvWithPathParams = Pick<APIGatewayProxyEvent, 'pathParameters'>
+export type ResolveServiceAndPath = (ev: EvWithPathParams) => [service: Service, path: `/${string}`] | undefined
+export type ServiceAndPath = NonNullable<ReturnType<ResolveServiceAndPath>>
 
-export const resolveService = (ev: TrimmedProxyEvent): [Service, string] | void => {
+export const resolveServiceAndPath: ResolveServiceAndPath = (ev) => {
   const url = new URL(ev.pathParameters?.proxy || '')
   const urlStr = url.toString()
 
-  resolveServiceLogger.log(`Resolving service for url ${urlStr})`)
+  resolveServiceAndPathLogger.log(`Resolving service for url ${urlStr})`)
   for (const [pattern, serviceName] of servicePatterns) {
     if (pattern.test(urlStr)) {
-      resolveServiceLogger.log(`Resolved service: ${serviceName} for url ${urlStr}`)
-      return [serviceName, url.pathname]
+      resolveServiceAndPathLogger.log(`Resolved service: ${serviceName} for url ${urlStr}`)
+      return [serviceName, url.pathname as `/${string}`]
     }
   }
-  resolveServiceLogger.log(`Failed to resolve service for url ${url})`)
+  resolveServiceAndPathLogger.log(`Failed to resolve service for url ${url})`)
+  return undefined
 }

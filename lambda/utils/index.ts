@@ -1,3 +1,5 @@
+import { Jsonifiable } from 'type-fest'
+
 export * from './logger.js'
 export * from './config.js'
 export * from './constants.js'
@@ -11,3 +13,10 @@ export const getErrorMessage = (error: unknown) => (error instanceof Error ? err
 export const responseIsSuccessful = (response: Response) => response.status >= 200 && response.status <= 399
 
 export const delay = (ms = 250): Promise<void> => new Promise((r) => setTimeout(r, ms))
+
+export const deepCopy = <T extends Jsonifiable>(serializable: T): T => JSON.parse(JSON.stringify(serializable))
+
+type SearchParams = ConstructorParameters<typeof URLSearchParams>[0]
+
+export const parsePath = (path: string, searchParams: SearchParams) =>
+  [path, new URLSearchParams(searchParams).toString()].join('?')

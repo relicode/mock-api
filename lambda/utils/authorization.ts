@@ -1,39 +1,38 @@
-import { parseHeaders, resolveService, mockCredentials, createLogger } from './index.js'
 import { APIGatewayProxyEvent } from 'aws-lambda'
+import { StatusCode } from 'status-code-enum'
 
-const AUTH = 'authorization' as const
-const STATUS_OK = 200 as const
-const STATUS_UNAUTHORIZED = 401 as const
+import { mockCredentials, HeadersNames, getHeader, Service } from './index.js'
 
-export const getHibobAuthHeaders = () => {
-  const { serviceId, serviceToken } = mockCredentials.hibob
-  const buffer = Buffer.from([serviceId, serviceToken].join(':'))
-  return parseHeaders({ Authorization: `Basic ${buffer.toString('base64')}` })
-}
+const AUTH = HeadersNames.AUTHORIZATION
 
-const logger = createLogger('checkAuthorization')
+const hibobHeaders = [AUTH] as const
+const harvestHeaders = [AUTH, 'Harvest-Account-Id'] as const
 
-export const checkAuthorization = (ev: APIGatewayProxyEvent) => {
-  const resolved = resolveService(ev)
+export const checkAuthorization = (resolved: [service: Service, path: string], ev: APIGatewayProxyEvent): number => {
+  const [service] = resolved
 
-  if (!resolved) return STATUS_UNAUTHORIZED
-  const [serviceName, path] = resolved
-  logger.log(`Resolved service: ${serviceName}, path: ${path}`)
-  const validAuth = getHibobAuthHeaders()[AUTH]
-
-  logger.log('Request headers: ', parseHeaders(ev))
-
-  const requestAuth = parseHeaders(ev)[AUTH]
-
-  switch (serviceName) {
+  switch (service) {
     case 'hibob':
-      logger.log(`Valid headers: ${validAuth}, request: ${requestAuth}`)
-      return requestAuth === validAuth ? STATUS_OK : STATUS_UNAUTHORIZED
+      return hibobHeaders.reduce(
+        (acc: number, cur: string) =>
+          acc === StatusCode.SuccessOK && getHeader(ev, cur) === mockCredentials.hibob.headers[cur]
+            ? StatusCode.SuccessOK
+            : StatusCode.ClientErrorUnauthorized,
+        StatusCode.SuccessOK,
+      )
     case 'harvest':
-      return STATUS_UNAUTHORIZED
+      return harvestHeaders.reduce(
+        (acc: number, cur: string) =>
+          acc === StatusCode.SuccessOK && getHeader(ev, cur) === mockCredentials.harvest.headers[cur]
+            ? StatusCode.SuccessOK
+            : StatusCode.ClientErrorUnauthorized,
+        StatusCode.SuccessOK,
+      )
+    /*
     case 'cinode':
-      return STATUS_UNAUTHORIZED
+      return StatusCode.ServerErrorNotImplemented
+    */
     default:
-      return STATUS_UNAUTHORIZED
+      return StatusCode.ServerErrorNotImplemented
   }
 }

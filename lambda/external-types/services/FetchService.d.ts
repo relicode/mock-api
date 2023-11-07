@@ -8,3 +8,4 @@ export default class FetchService {
   post<T, B extends Body = Body>(path: string, body?: B, config?: RequestInit): Promise<T>
 }
 export {}
+//# sourceMappingURL=FetchService.d.ts.map

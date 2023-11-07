@@ -1,5 +1,5 @@
 {
-  "app": "npx tsx bin/hibob-integration-mock-api.ts",
+  "app": "npx tsx bin/synth.ts",
   "watch": {
     "include": ["**"],
     "exclude": [

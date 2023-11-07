@@ -1,8 +1,8 @@
 import { strict as assert } from 'node:assert'
 import test from 'node:test'
 
-import { Service } from './constants.js'
-import { parseHeaders, resolveService } from './api-gw.js'
+import { Service } from '../../lambda/utils/constants.js'
+import { normalizeHeaders, resolveServiceAndPath } from '../../lambda/utils/api-gw.js'
 
 const genEv = (proxy: string) => ({ pathParameters: { proxy } })
 
@@ -32,26 +32,26 @@ test('headers are parsed properly', async (t) => {
   }
 
   await t.test('Headers are parsed from plain object', async () => {
-    const parsed = parseHeaders(requestHeaders)
+    const parsed = normalizeHeaders(requestHeaders)
     assert.equal(parsed.authorization, requestHeaders.Authorization)
   })
 
   await t.test('Headers are parsed from request object', async () => {
-    const parsed = parseHeaders({ headers: requestHeaders })
+    const parsed = normalizeHeaders({ headers: requestHeaders })
     assert.equal(parsed.authorization, requestHeaders.Authorization)
   })
 
   await t.test('Headers are parsed from Header instance', async () => {
     const VALUE = 'value'
-    const parsed = parseHeaders(new Headers({ key: VALUE }))
+    const parsed = normalizeHeaders(new Headers({ key: VALUE }))
     assert.equal(parsed.key, VALUE)
   })
 
   await t.test('Headers are appended', async () => {
     const ALL = '*/*'
     const APP_JSON = 'application/json'
-    const parsed = parseHeaders({ 'Content-Type': ALL, 'content-type': APP_JSON })
-    const contentType = parsed['content-type'].split(', ')
+    const parsed = normalizeHeaders({ 'Content-Type': ALL, 'content-type': APP_JSON })
+    const contentType = parsed['content-type']!.split(', ')
     assert.equal(contentType.includes(ALL) && contentType.includes(APP_JSON), true)
   })
 })
@@ -67,7 +67,7 @@ test('right service is derived from event', async (t) => {
 
   for (const [url, expectedService, expectedPath] of urls) {
     await t.test(`Path ${url} should resolve to service ${expectedService} with url of ${expectedPath}.`, () => {
-      assert.deepEqual(resolveService(genEv(url)), [expectedService, expectedPath])
+      assert.deepEqual(resolveServiceAndPath(genEv(url)), [expectedService, expectedPath])
     })
   }
 })
@@ -88,7 +88,7 @@ test('invalid paths throw an error', async (t) => {
 
   for (const path of invalidPaths) {
     await t.test(`Path ${path} should return undefined.`, () => {
-      assert.equal(resolveService(genEv(path)), undefined)
+      assert.equal(resolveServiceAndPath(genEv(path)), undefined)
     })
   }
 })

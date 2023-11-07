@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker'
-import type { PartialDeep } from 'type-fest'
 
-import type { HarvestTimeEntry, HarvestUser } from '../lambda/utils/external-types/utils/types.d.ts'
+import type { HarvestTimeEntry, HarvestUser } from '../lambda/external-types/utils/types.d.ts'
 import { createLogger } from '../lambda/utils/index.js'
 
 const logger = createLogger('generate-mock-data')
@@ -27,7 +26,7 @@ const generateHarvestUser = (props: Partial<HarvestUser> | HarvestUser): Harvest
     is_contractor: faker.datatype.boolean(),
     is_active: faker.datatype.boolean(),
     calendar_integration_enabled: faker.datatype.boolean(),
-    calendar_integration_source: {},
+    // calendar_integration_source: {},
     /**
      * Actual harvest string format:
      * 2023-09-06T13:41:34Z
@@ -48,10 +47,7 @@ const generateHarvestUser = (props: Partial<HarvestUser> | HarvestUser): Harvest
   }
 }
 
-const generateTimeEntry = (
-  { id, first_name, last_name }: HarvestUser,
-  props: PartialDeep<HarvestTimeEntry> = {},
-): typeof props => ({
+const generateTimeEntry = ({ id, first_name, last_name }: HarvestUser): HarvestTimeEntry => ({
   id: generateId(),
   spent_date: faker.date.past().toISOString(),
   user: { id, name: `${first_name} ${last_name}` },
@@ -59,10 +55,10 @@ const generateTimeEntry = (
   task: { id: generateId() },
 })
 
-const harvestUsers = Array.from({ length: 10 }, generateHarvestUser)
+const harvestUsers = Array.from({ length: 1000 }, generateHarvestUser)
 const harvestTimeEntries = Array.from({ length: 10 }, () => generateTimeEntry(faker.helpers.arrayElement(harvestUsers)))
 const data = { harvestUsers, harvestTimeEntries }
 
 export type MockData = typeof data
 
-logger.console.log(JSON.stringify(data, null, 2))
+if (!process.env.SILENCE_MOCK_DATA) logger.console.log(JSON.stringify(data, null, 2)) // eslint-disable-line no-process-env
