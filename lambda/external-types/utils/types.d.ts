@@ -2,7 +2,7 @@ import type CinodeService from '../services/CinodeService'
 import HarvestService from '../services/HarvestService'
 import HibobService from '../services/HibobService'
 export type HiBobChangeType = 'Created' | 'Canceled' | 'Deleted'
-export type HarvestTaskName = 'Annual leave'
+
 export type HiBobTimeOff = {
   totalDuration: number
   policyTypeDisplayName: string
@@ -82,10 +82,10 @@ export type HarvestTimeEntry = {
     is_project_manager: boolean
     is_active: boolean
     use_default_rates: boolean
-    // budget: unknown
+    budget: number
     created_at: string
     updated_at: string
-    // hourly_rate: unknown
+    hourly_rate: unknown
   }
   task_assignment: {
     id: number
@@ -167,9 +167,9 @@ export type UserFromHarvest = {
 }
 export type HarvestTask = {
   id: number
-  name: HarvestTaskName
+  name: string
   billable_by_default: boolean
-  // default_hourly_rate: unknown
+  default_hourly_rate: number
   is_default: boolean
   is_active: boolean
   created_at: string
@@ -198,7 +198,7 @@ export type HarvestProjectAssignment = {
   // budget: unknown
   created_at: string
   updated_at: string
-  // hourly_rate: unknown
+  hourly_rate: number
   project: {
     id: number
     name: string

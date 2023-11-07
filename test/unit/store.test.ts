@@ -14,7 +14,7 @@ test('createStore', async (t) => {
   })
 
   await t.test('should return an object with customised initial state', async () => {
-    const customSource: MockData = { harvestUsers: [], harvestTimeEntries: [] }
+    const customSource: MockData = { harvestUsers: [], harvestTasks: [], harvestTimeEntries: [] }
     const mutableState = createStore(customSource).getState()
 
     assert.deepEqual(mutableState, customSource)
@@ -46,6 +46,6 @@ test('createStore', async (t) => {
   })
 
   await t.test('should return the email of the second harvest user', async () => {
-    assert.equal(_.get(store.getState(), 'harvestUsers[1].email'), 'Katelin.Witting83@gmail.com')
+    assert.equal(_.get(store.getState(), 'harvestUsers[1].email'), 'Susan_Hartmann@hotmail.com')
   })
 })
