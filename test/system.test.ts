@@ -4,6 +4,7 @@ import { strict as assert } from 'node:assert'
 import test from 'node:test'
 
 import { ContentTypes, HeadersNames, createFetcher, mockCredentials } from '../lambda/utils/index.js'
+import { HarvestUser } from '../lambda/external-types/utils/types.js'
 
 const api = createFetcher({ loggerConfig: 'system test fetcher', retries: 0 })
 const baseUrl = process.env.BASE_URL // eslint-disable-line no-process-env
@@ -27,11 +28,11 @@ const jsonHeaders = {
 } as const
 
 test('Hibob requests are authorized', async (t) => {
-  await t.test('Status 200 with valid hibob credentials', async () => {
+  await t.test('Status 501 with valid hibob credentials', async () => {
     const response = await api.fetch(hibobUrl, {
       headers: { ...jsonHeaders, ...hibobAuthHeaders },
     })
-    assert.equal(response.status, 200)
+    assert.equal(response.status, 501)
   })
 
   await t.test('Status 401 with invalid hibob credentials', async () => {
@@ -48,11 +49,11 @@ test('Hibob requests are authorized', async (t) => {
 })
 
 test('Harvest requests are authorized', async (t) => {
-  await t.test('Status 200 with valid harvest credentials', async () => {
+  await t.test('Status 501 with valid harvest credentials', async () => {
     const response = await api.fetch(harvestUrl, {
       headers: { ...jsonHeaders, ...harvestAuthHeaders },
     })
-    assert.equal(response.status, 200)
+    assert.equal(response.status, 501)
   })
 
   await t.test('Status 401 with invalid harvest credentials', async () => {
@@ -65,6 +66,17 @@ test('Harvest requests are authorized', async (t) => {
       headers: harvestAuthHeaders,
     })
     assert.equal(response.status, 404)
+  })
+})
+
+test('Harvest', async (t) => {
+  const init = {
+    headers: { ...jsonHeaders, ...harvestAuthHeaders },
+  }
+
+  await t.test('Retrieves all harvestUsers', async () => {
+    const harvestUsers = await api.fetchJson<HarvestUser[]>(`${harvestUrl}users`, init)
+    assert.equal(harvestUsers.length, 1000)
   })
 })
 

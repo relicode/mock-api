@@ -10,7 +10,7 @@ export const createStore = (initialData: MockData = defaultInitialData) => {
   let state = initState(initialData)
 
   return {
-    getState: (): MockData => state,
+    getState: (): MockData => deepCopy(state),
     resetState: (resetInitialData: MockData = initialData): MockData => {
       state = initState(resetInitialData)
       return state

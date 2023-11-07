@@ -3,10 +3,13 @@ import { APIGatewayProxyEvent, APIGatewayProxyEventHeaders, APIGatewayProxyResul
 import { StatusCode } from 'status-code-enum'
 
 import { ContentTypes, createLogger, HeadersNames, Service } from './index.js'
+import { Jsonifiable } from 'type-fest'
 
 const logger = createLogger('api-gw-utils')
 
-type ParsedAPIGatewayProxyResult = Omit<APIGatewayProxyResult, 'body'> & { body: string | Record<string, unknown> }
+export type ParsedAPIGatewayProxyResult = Omit<APIGatewayProxyResult, 'body'> & {
+  body: Jsonifiable
+}
 
 type HeadersSource = Headers | { headers: APIGatewayProxyEventHeaders } | Record<string, string>
 
@@ -57,8 +60,7 @@ const defaultResult: APIGatewayProxyResult = {
   isBase64Encoded: false,
 } as const
 
-type ParseResult = (result?: Partial<ParsedAPIGatewayProxyResult>) => APIGatewayProxyResult
-export const parseResult: ParseResult = ({ body, headers, ...rest } = {}) => ({
+const parseResult = ({ body, headers, ...rest }: Partial<ParsedAPIGatewayProxyResult> = {}): APIGatewayProxyResult => ({
   ...defaultResult,
   ...rest,
   headers: {
@@ -67,6 +69,13 @@ export const parseResult: ParseResult = ({ body, headers, ...rest } = {}) => ({
   },
   ...(body && { body: JSON.stringify(body) }),
 })
+parseResult.ok = (body?: Jsonifiable) => parseResult({ body })
+parseResult.notImplemented = parseResult({
+  statusCode: StatusCode.ServerErrorNotImplemented,
+  body: { errorMessage: 'Not implemented', statusCode: StatusCode.ServerErrorNotImplemented },
+})
+
+export { parseResult }
 
 const servicePatterns: Array<[RegExp, Service]> = [
   [new RegExp('https://api.cinode.com'), Service.CINODE],
@@ -77,7 +86,8 @@ const servicePatterns: Array<[RegExp, Service]> = [
 const resolveServiceAndPathLogger = createLogger('service-resolver')
 
 type EvWithPathParams = Pick<APIGatewayProxyEvent, 'pathParameters'>
-type ResolveServiceAndPath = (ev: EvWithPathParams) => [service: Service, path: string] | undefined
+export type ResolveServiceAndPath = (ev: EvWithPathParams) => [service: Service, path: `/${string}`] | undefined
+export type ServiceAndPath = NonNullable<ReturnType<ResolveServiceAndPath>>
 
 export const resolveServiceAndPath: ResolveServiceAndPath = (ev) => {
   const url = new URL(ev.pathParameters?.proxy || '')
@@ -87,7 +97,7 @@ export const resolveServiceAndPath: ResolveServiceAndPath = (ev) => {
   for (const [pattern, serviceName] of servicePatterns) {
     if (pattern.test(urlStr)) {
       resolveServiceAndPathLogger.log(`Resolved service: ${serviceName} for url ${urlStr}`)
-      return [serviceName, url.pathname]
+      return [serviceName, url.pathname as `/${string}`]
     }
   }
   resolveServiceAndPathLogger.log(`Failed to resolve service for url ${url})`)
