@@ -4,7 +4,7 @@ import { strict as assert } from 'node:assert'
 import test from 'node:test'
 
 import { ContentTypes, HeadersNames, createFetcher, mockCredentials } from '../lambda/utils/index.js'
-import { HarvestUser } from '../lambda/external-types/utils/types.js'
+import { HarvestTask, HarvestUser } from '../lambda/external-types/utils/types.js'
 
 const api = createFetcher({ loggerConfig: 'system test fetcher', retries: 0 })
 const baseUrl = process.env.BASE_URL // eslint-disable-line no-process-env
@@ -75,8 +75,13 @@ test('Harvest', async (t) => {
   }
 
   await t.test('Retrieves all harvestUsers', async () => {
-    const harvestUsers = await api.fetchJson<HarvestUser[]>(`${harvestUrl}users`, init)
-    assert.equal(harvestUsers.length, 1000)
+    const { users } = await api.fetchJson<{ users: HarvestUser[] }>(`${harvestUrl}users`, init)
+    assert.equal(users.length, 100)
+  })
+
+  await t.test('Retrieves all harvestTask', async () => {
+    const { tasks } = await api.fetchJson<{ tasks: HarvestTask[] }>(`${harvestUrl}tasks`, init)
+    assert.equal(tasks.length, 10)
   })
 })
 

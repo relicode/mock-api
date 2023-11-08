@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo Run with '. ./cdk.alias'
+
+alias cdk='npx cdk'

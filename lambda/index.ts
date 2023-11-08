@@ -40,7 +40,10 @@ export const handler: APIGatewayProxyHandler = async (ev, _ctx) => {
     switch (parsedPath) {
       case 'harvest/v2/users':
         auth()
-        return parseResult.ok(harvestService.getUsers())
+        return parseResult.ok({ users: harvestService.getUsers() })
+      case 'harvest/v2/tasks':
+        auth()
+        return parseResult.ok({ tasks: harvestService.getTasks() })
       case 'harvest/v2':
         auth()
         return parseResult.notImplemented
