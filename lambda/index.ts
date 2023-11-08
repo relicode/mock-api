@@ -38,6 +38,11 @@ export const handler: APIGatewayProxyHandler = async (ev, _ctx) => {
 
   try {
     switch (parsedPath) {
+      case 'harvest/v2/time-entries':
+        auth()
+        return parseResult.ok({
+          time_entries: harvestService.getTimeEntries(ev.queryStringParameters),
+        })
       case 'harvest/v2/users':
         auth()
         return parseResult.ok({ users: harvestService.getUsers() })

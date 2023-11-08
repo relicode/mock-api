@@ -1,7 +1,8 @@
 import _ from 'lodash'
 import type { LoggerConfig } from './logger.js'
 import { ContentTypes, HeadersNames, createLogger, delay, getErrorMessage } from './index.js'
-import type { EmptyObject, Jsonifiable } from 'type-fest'
+import type { EmptyObject } from 'type-fest'
+import { Serializable } from '../types.js'
 
 const jsonHeaders = {
   [HeadersNames.CONTENT_TYPE]: ContentTypes.JSON,
@@ -24,7 +25,6 @@ const defaultConfig: FetcherConfig = {
 type FetchParams = Parameters<typeof fetch>
 type RequestInfo = FetchParams[0]
 type Init = RequestInit // FetchParams[1]
-type Serializable = Jsonifiable | undefined
 
 type JSONFetchParams<T extends Serializable> = [input: RequestInfo, init?: Omit<Init, 'body'> & { body?: T }]
 
@@ -119,7 +119,7 @@ export const createFetcher = (options?: Partial<FetcherConfig>) => {
     return { json, response }
   }
 
-  const fetchJson = <T extends Jsonifiable, B extends Serializable = EmptyObject | undefined>(
+  const fetchJson = <T extends Serializable, B extends Serializable = EmptyObject | undefined>(
     ...[url, init]: JSONFetchParams<B>
   ): Promise<T> => fetchJsonAndResponse<T, B>(url, init).then((response) => response.json)
 

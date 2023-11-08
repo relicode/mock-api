@@ -1,3 +1,4 @@
+import { DateStr } from '../../types.ts'
 import type CinodeService from '../services/CinodeService'
 import HarvestService from '../services/HarvestService'
 import HibobService from '../services/HibobService'
@@ -232,7 +233,7 @@ export type TimeEntryToHarvest = {
   task_id: number
   user_id: number
   hours: number
-  spent_date: string
+  spent_date: DateStr
 }
 export type UserEmailRequestParams = {
   userEmail: string

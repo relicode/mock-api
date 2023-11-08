@@ -3,8 +3,8 @@ import 'dotenv/config'
 import { strict as assert } from 'node:assert'
 import test from 'node:test'
 
-import { ContentTypes, HeadersNames, createFetcher, mockCredentials } from '../lambda/utils/index.js'
-import { HarvestTask, HarvestUser } from '../lambda/external-types/utils/types.js'
+import { ContentTypes, HeadersNames, createFetcher, mockCredentials, parsePath } from '../lambda/utils/index.js'
+import { HarvestTask, HarvestTimeEntry, HarvestUser } from '../lambda/external-types/utils/types.js'
 
 const api = createFetcher({ loggerConfig: 'system test fetcher', retries: 0 })
 const baseUrl = process.env.BASE_URL // eslint-disable-line no-process-env
@@ -79,9 +79,30 @@ test('Harvest', async (t) => {
     assert.equal(users.length, 100)
   })
 
-  await t.test('Retrieves all harvestTask', async () => {
+  await t.test('Retrieves all harvestTasks', async () => {
     const { tasks } = await api.fetchJson<{ tasks: HarvestTask[] }>(`${harvestUrl}tasks`, init)
     assert.equal(tasks.length, 10)
+  })
+
+  await t.test('Retrieves all timeEntries', async () => {
+    const resp = await api.fetchJson<{ time_entries: HarvestTimeEntry[] }>(`${harvestUrl}time-entries`, init)
+    assert.equal(resp.time_entries.length, 100)
+  })
+
+  await t.test('Retrieves timeEntries from 2023-02-16', async () => {
+    const resp = await api.fetchJson<{ time_entries: HarvestTimeEntry[] }>(
+      parsePath(`${harvestUrl}time-entries`, { from: '2023-02-16' }),
+      init,
+    )
+    assert.equal(resp.time_entries.length, 72)
+  })
+
+  await t.test('Retrieves timeEntries from 2023-02-16 up to 2023-10-17', async () => {
+    const resp = await api.fetchJson<{ time_entries: HarvestTimeEntry[] }>(
+      parsePath(`${harvestUrl}time-entries`, { from: '2023-02-16', to: '2023-10-17' }),
+      init,
+    )
+    assert.equal(resp.time_entries.length, 67)
   })
 })
 

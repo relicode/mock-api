@@ -3,12 +3,12 @@ import { APIGatewayProxyEvent, APIGatewayProxyEventHeaders, APIGatewayProxyResul
 import { StatusCode } from 'status-code-enum'
 
 import { ContentTypes, createLogger, HeadersNames, Service } from './index.js'
-import { Jsonifiable } from 'type-fest'
+import { Serializable } from '../types.js'
 
 const logger = createLogger('api-gw-utils')
 
 export type ParsedAPIGatewayProxyResult = Omit<APIGatewayProxyResult, 'body'> & {
-  body: Jsonifiable
+  body: Serializable
 }
 
 type HeadersSource = Headers | { headers: APIGatewayProxyEventHeaders } | Record<string, string>
@@ -69,7 +69,7 @@ const parseResult = ({ body, headers, ...rest }: Partial<ParsedAPIGatewayProxyRe
   },
   ...(body && { body: JSON.stringify(body) }),
 })
-parseResult.ok = (body?: Jsonifiable) => parseResult({ body })
+parseResult.ok = (body?: Serializable) => parseResult({ body })
 parseResult.notImplemented = parseResult({
   statusCode: StatusCode.ServerErrorNotImplemented,
   body: { errorMessage: 'Not implemented', statusCode: StatusCode.ServerErrorNotImplemented },

@@ -17,6 +17,11 @@ export enum HeadersNames {
   CONTENT_TYPE = 'content-type',
 }
 
+export enum ImportantDates {
+  DAY_ZERO = '0000-01-01T00:00:00.000Z',
+  LAST_DAY = '9999-12-31T23:59:59.999Z',
+}
+
 type MockCredentials = ReadonlyDeep<{
   [service in Service]: {
     headers: { [HeadersNames.AUTHORIZATION]: string; [key: string]: string }
