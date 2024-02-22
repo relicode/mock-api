@@ -37,7 +37,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "type-fest": "^4.4.0",
-    "wait-on": "^7.0.1"
+    "wait-on": "^7.2.0"
   },
   "dependencies": {
     "@faker-js/faker": "^8.1.0",
